@@ -34,8 +34,6 @@ extra_css: ["extra.css"]
 plugins:
   - search:
       lang: en
-  - minify:
-      minify_html: true
 markdown_extensions:
   - abbr
   - attr_list

@@ -8,15 +8,15 @@ dynamodb=boto3.resource('dynamodb')
 car_table=dynamodb.Table(CAR_TABLE)
 
 
-def handler(event, context):
-    print(event)
-    httpMethod = event['httpMethod']
+def handler(command, context):
+    print(command)
+    httpMethod = command['httpMethod']
     if httpMethod == 'GET':
-        car_id = event['pathParameters']['car_id']
+        car_id = command['pathParameters']['car_id']
         car = getCar(car_id)
         return car
     elif httpMethod == 'POST':
-        carStr=event['body']
+        carStr=command['body']
         car=json.loads(carStr)
         carOut = createCar(car)
         print(carOut)

@@ -3,18 +3,31 @@
 
 A simple application to manage an inventory of Autonomous Robot Cars. This is to demonstrate some of the microservice implementation in Lambda with functional and stress testing.
 
-[Read documentation in book format](https://jbcodeforce.github.io/autonomous-car-mgr)
+[Read documentation in book format](https://jbcodeforce.github.io/autonomous-car-mgr/)
 
 ## Iterative development
 
 * Setup local python environment
 
-```
+```sh
  python3 -m venv .devenv
  source .devenv/bin/activate
 ```
 
 * Unit tests the Lambda function
+
+```sh
+# under tests/ut
+pytest
+```
+
+* Deploy using CDK
+
+```sh
+#under cdk
+cdk synth 
+cdk deploy
+```
 
 ## Implementation
 
