@@ -3,6 +3,11 @@ repo_url: https://github.com/jbcodeforce/autonomous-car-mgr.git
 site_author: Jerome Boyer
 nav:
   - Introduction: index.md
+  - Architecture: architecture.md
+  - Scaling: scaling.md
+  - Security: security.md
+  - DevOps: dev_ops.md
+  - Cost : cost.md
 theme: 
   name: material
   palette:
