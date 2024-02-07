@@ -5,7 +5,7 @@
 
 ## Microservice and Lambda
 
-The Lambda code fits in the function programming paradigm. This is not a microservice. The entry point is a unique handler function. The payload is call event, but is a loose definition as agreed upon in classical [event-driven architecture](https://jbcodeforce.github.io/eda-studies/eda/), where it represents something happen as immutable fact. In microservice design, developer has to think about domain-driven-design (DDD) bounded context. The methodology starts with the [event storming practice](https://jbcodeforce.github.io/eda-studies/event-storming/) and apply [DDD constructs](https://jbcodeforce.github.io/eda-studies/ddd/) like commands, aggregates, repository... Those elements are the grouping that serve as foundations for the microservice implementation. The following figure illustrates how to move from elements discovered during DDD sessions and a microservice supports the Order Entity:
+The Lambda code fits in the function programming paradigm. As a [twelve factors app](https://12factor.net/) Lambda function has the characteristic of a microservice. The entry point is a unique handler function, which constraint the implementation or enforce implementing message routing. The payload is call event, but is a loose definition as agreed upon in classical [event-driven architecture](https://jbcodeforce.github.io/eda-studies/eda/), where it represents something happen as immutable fact. In microservice design, developer has to think about the domain-driven-design (DDD) bounded contexts. The methodology starts with the [event storming practice](https://jbcodeforce.github.io/eda-studies/event-storming/) and applies [DDD constructs](https://jbcodeforce.github.io/eda-studies/ddd/) like Command, Aggregate, Event, Repository... Those elements are the grouping that serve as foundations for the microservice implementation. The following figure illustrates how to move from elements discovered during DDD sessions and a microservice supports the Order Entity:
 
 ![](./images/evt-driv-ms.png)
 
@@ -19,7 +19,7 @@ Those practices lead to have one Git Repository per microservice, with infrastru
 
 ### Lambda to implement microservice
 
-While Lambda seems to map to microservice principles of separating an application into distinct units of independent deployment, it is still a function programming. There is nothing wrong about that, but the design and granularity of the business logic to fit into this function handler may violate some other software engineering principles, like encapsulation, clear separation of concern, avoid unnecessary complexity. Taking the same DDD elements for the order microservice, we can try to map it into Lambdas and other services to support the same bounded context:
+While Lambda seems to map to microservice principles of separating an application into distinct units of independent deployment, it is still a function programming. There is nothing wrong about that, but the design and granularity of the business logic to fit into this function handler may violate some other software engineering principles, like encapsulation, clear separation of concern, avoid unnecessary complexity, code duplication. Taking the same DDD elements for the order microservice, we can try to map it into Lambdas and other services to support the same bounded context:
 
 ![](./diagrams/micro-to-lambda.drawio.png)
 
@@ -38,9 +38,11 @@ def handler(command, context):
         carOut = createCar(car)
 ```
 
-The microservice is now a group of lambda, API gateway construct, dynamodb tables (or SQL ones, does not matter for this discussion), and queueing for event propagation. The code integrity is done via the Infrastructure as Code (IaC) definition. This IaC can be done with cloud formation or AWS Serverless Application Model [SAM](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html). 
-When adopting and event-driven implementation, we need to assess if we want to use the [Transactional Outbox pattern](https://jbcodeforce.github.io/eda-studies/patterns/#transactional-outbox), by saving the event to a dedicate event table, and use Change Data Capture or DynamoDB streaming to propagate events to the downstream consumers.
+The microservice is now a group of lambda functions, API gateway construct, Dynamodb tables (or SQL ones, does not matter for this discussion), and queueing for event propagation. The code integrity is done via the Infrastructure as Code (IaC) definition. This IaC can be done with cloud formation or AWS Serverless Application Model [SAM](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html). 
 
+Also this is not because the argument of the function is called 'event' that it has the same semantic of a business event in an EDA. This is a message to process as a request.
+
+When adopting and event-driven implementation, we need to assess if we want to use the [Transactional Outbox pattern](https://jbcodeforce.github.io/eda-studies/patterns/#transactional-outbox), by saving the event to a dedicate event table, and use Change Data Capture or DynamoDB streaming to propagate events to the downstream consumers.
 
 ### Lambda constructs
 
@@ -48,11 +50,13 @@ A  Lambda function has three primary components – trigger, code, and configura
 
 ![](./images/lambda-fct-0.png){ width=800 }
 
-* **Triggers** describe when a Lambda function should run. A trigger integrates the Lambda function with other AWS services, enabling to run the Lambda function in response to certain API calls that occur in the AWS account. To support microservice implementation using Lamdba, the main trigger should be API Gateway.
+* **Triggers** describe when a Lambda function should run. A trigger integrates the Lambda function with other AWS services, enabling to run the Lambda function in response to certain API calls that occur in the AWS account. To support microservice implementation using Lambda, the main trigger should be API Gateway.
 * An **execution environment** manages the processes and resources that are required to run the function. 
 * **Configuration** includes compute resources, execution timeout, IAM roles (lambda_basic_execution)...
 
-## Run Time architecture
+Servers do not run continuously, and a function invocation is time boxed to 15 minutes. 
+
+### Run Time architecture
 
 The execution environment follows the [life cycle](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html) as defined below (time goes from left to right):
 
@@ -89,7 +93,10 @@ The execution environment follows the [life cycle](https://docs.aws.amazon.com/l
 * Each lambda function has a unique ARN.
 * Deployment package is a zip or container image.
 
+
 ## Fit for purpose
+
+This section addresses when to use Lambda as an implementation and deployment approach for implementing business logic, within a bigger solution business process.
 
 ### Technical constraints
 
@@ -104,16 +111,50 @@ There are a set of physical constraints the Lambda application needs to support:
 
 ### Design constraints
 
-* Event-driven architectures use events to communicate between services and invoke decoupled services.
+* Event-driven architectures use events to communicate between services and invoke decoupled services. This is the world of eventual consistency.
 
-* When migrating existing application [review the different design patterns to consider](./index.md/#designing-for-serverless).
-* Think about co-existence with existing application and how API Gateway can be integrated to direct traffic to new components (Lambda functions) without disrupting existing systems. With [API Gateway](./apigtw.md) developer can export the SDK for the business APIs to make integration easier for other clients, and can use throttling and usage plans to control how different clients can use the API.
+* When migrating existing application [review the different design patterns to consider](/#designing-for-serverless).
+* Think about co-existence with existing application and how API Gateway can be integrated to direct traffic to new components (Lambda functions) without disrupting existing systems. With API Gateway developer can export the SDK for the business APIs to make integration easier for other clients, and can use throttling and usage plans to control how different clients can use the API.
 * Do cost comparison analysis. For example API Gateway is pay by the requests, while ALB is priced by hours based on the load balance capacity units used per hour. Lambda is also per request based.
-* Not everything fits into the function design. Assess if it makes sense to map REST operations in the same handler. AWS [Lambda Powertools](https://docs.powertools.aws.dev/lambda/python/latest/) has a APIGatewayRestResolver that makes the code neat with api being defined with annotation: see [Lambda DynamoDB example](https://github.com/jbcodeforce/yarfba/tree/main/labs/lambdas/lambda-dynamo)
-* Assess when to use Fargate when the application is in container, and may run for a long time period. Larger packaging may not be possible to run on Lambda. Applications that use non HTTP end point, integrate to messaging middleware with Java based APIs are better fit for Fargate deployment.
+* Assess when to use ECS Fargate when the application is in container, and may run for a long time period. Larger packaging may not be possible to run on Lambda. Applications that use non HTTP end point, integrate to messaging middleware with Java based APIs are better fit for ECS Fargate deployment.
 
+### Designing for Lambda
 
-### Lambda and Event-driven architecture
+A lot of design principles are [well documented in the Lambda user guide](https://docs.aws.amazon.com/lambda/latest/operatorguide/design-principles.html), below are some complement principles to consider.
+
+#### Migrating existing workloads
+
+Some of the common design patterns to consider when migrating to serverless:
+
+* **Leapfrog**: bypass interim steps and go straight from an on-premises legacy architecture to a serverless cloud architecture.
+* **Organic**: lift and shift. Experiment with Lambda in low-risk internal scenarios such as log processing or cron jobs.
+* **Strangler**: incrementally and systematically decomposes monolithic applications by creating APIs and building event-driven components that gradually replace components of the legacy application. New feature branches can be serverless first, and legacy components can be decommissioned as they are replaced.
+
+##### Good questions to assess
+
+| Question | Comment |
+| --- | --- |
+| What does the application do and how are its components organized? | Establish a bounded context for each microservice. Assess entity and data store. |
+| How can you break your data needs based on the [command query responsibility segregation (CQRS)](https://jbcodeforce.github.io/eda-studies/patterns/cqrs/) pattern?  | Strangle data by needs. Decouple write transaction from queries at scale.  |
+| How does the application scale and what components drive the capacity you need?  | Look at independent scaling, and high scaling demand. |
+| Do you have schedule-based tasks?  | cron jobs are good targets to replace with Lambda functions |
+| Do you have workers listening to a queue?  | Decoupling may already being adopted, EDA discussions may be started. |
+| Where can you refactor or enhance functionality without impacting the current implementation? | Look at API needs, ALB needs. |
+
+#### Starting new application
+
+When starting development for a new application, the following principles may be reviewed to assess for their pertinence:
+
+* Design each Lambda function to handle a single, focused task without dependencies on other functions. This keeps functions independent and decoupled.
+* Apply the DDD and bounded context principles to identify service granularity.
+* Assess the need for synchronous call between function, and when orchestration flow needs to be externalized. Developer may reduce coupling by adopting asynchronous invocation between functions but it adds complexity and cost.
+* Verify is the performance needs are on the read and query part, and adopt [CQRS](https://jbcodeforce.github.io/eda-studies/patterns/cqrs/)
+* When adopting asynchronous invocation, think of message duplications and how to support idempotency.
+* Implement error handling within each function rather than propagating errors up the call chain. This prevents failures in one function from impacting others.
+
+See [Serverless app Lens in AWS Well Architected.](https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/welcome.html)
+
+#### Lambda and Event-driven architecture
 
 Event-driven architectures use events to communicate between services and invoke decoupled services.
 
@@ -121,7 +162,7 @@ The reference architecture for Event-driven architecture is described in [this a
 
 One important consideration is to address what are the event producers, and then what consumers are interested by those events.
 
-Lambda Function can be producer of business events to an event backbone. It can also be a consumer, and Lambda has native support for events produced by message and streaming services like Amazon Simple Queue Service (SQS), Amazon Simple Notification Service (SNS), and Amazon Kinesis.
+Lambda Function can be producer of business events to an event backbone. It can also be a consumer, and Lambda has native support for events produced by message and streaming services like Amazon Simple Queue Service (SQS), Amazon Simple Notification Service (SNS), and Amazon Kinesis. The major question is at least delivery and idempotency.
 
 ## Integration with other services
 
@@ -133,7 +174,19 @@ Lambda Function can be producer of business events to an event backbone. It can 
 
 ### Queueing integration
 
-
 ### Streaming integration
 
-## Service limits
+## Service limit or quotas
+
+By design Lambda service scale the function invocation to serve the traffic of the application. Other services integrated with Lambda, like API Gateway, SNS, SQS and Step Functions, also scale up to respond to increased load. 
+
+As a multi-tenant service, there are guardrails in place. Service quotas can be raised until a hard limit.
+
+Quotas may apply at the Region level, or account level, and may also include time-interval restrictions.
+
+See the [architecting with service quotas](https://docs.aws.amazon.com/lambda/latest/operatorguide/service-quotas.html) section of the product user guide.
+
+Pay attention to concurrent requests quotas per service, and payload size constraint. With big payload think about the claim-check pattern where big files are saved to external storage like S3 bucket.
+
+As some quotas are set a the account level. First separate dev and production accounts. Leverage [AWS Organizations](https://aws.amazon.com/organizations/) to manage all those accounts, the security policies... Use developer account to be able to test lambda with some production data, without impacting the quota limits.
+

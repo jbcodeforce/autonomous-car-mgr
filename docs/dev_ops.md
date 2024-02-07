@@ -1,10 +1,12 @@
 # DevOps
 
-
-
 ### Error Handling by execution model
 
-There are different ways to support error handling depending of the integration and communication protocol.
+As a general practice, implement error handling within each function rather than propagating errors up the call chain. This prevents failures in one function from impacting others.
+
+Implement throttling, retries and DLQs between functions to avoid failures in one function causing cascading failures in others.
+
+There are different ways to support error handling, depending of the integration and communication protocol.
 
 ???+ "API Gateway - synchronous call"
     * **Timeout** – API Gateway has a 30-second timeout. If the Lambda function hasn't responded to the request within 30 seconds, an error is returned to the client caller.

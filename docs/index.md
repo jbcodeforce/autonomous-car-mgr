@@ -6,8 +6,8 @@ A simple application to manage an inventory of Autonomous Robot Cars. This is to
 
 ### Architecture Patterns
 
-* Review Lambda runtime architecture
-* Serverless architecture patterns: how to map to a microservice approach ? what are the best practices for using Lambda functions to ensure loose coupling and service autonomy?
+* [x] Review Lambda runtime architecture
+* [x] Serverless architecture patterns: how to map to a microservice approach ? what are the best practices for using Lambda functions to ensure loose coupling and service autonomy?
 * How to use event sourcing with Lambda? 
 * How to handle state management in a stateless environment like AWS Lambda, especially for complex workflows or transactions?
 * What are the best practices for integrating AWS Lambda with other AWS services, particularly for event-driven architectures?
