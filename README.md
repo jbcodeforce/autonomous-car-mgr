@@ -1,18 +1,26 @@
 # Autonomous Car Manager Service
 
 
-A simple application to manage an inventory of Autonomous Robot Cars. This is to demonstrate some of the microservice implementation in Lambda with functional and stress testing.
+A simple application to manage an inventory of Autonomous Robot Cars. This is to demonstrate some of the microservice implementation with Amazon Lambda with functional and stress testing.
 
-[Read documentation in book format](https://jbcodeforce.github.io/autonomous-car-mgr/)
+[Read documentation in book format](https://jbcodeforce.github.io/autonomous-car-mgr/) for detail on Lambda implementation and deployment best practices.
+
+## Requirements
+
+The application supports CRU operations on an Autonomous Car. This is a simple microservice about managing the life cycle of an autonomous car as part of Acme Inc car inventory. The cars are used as robot taxis.
+
+![](./docs/diagrams/acm-base.drawio.png)
 
 ## Iterative development
 
-* Setup local python environment
+* From the root folder of this repository, setup a local python environment:
 
 ```sh
  python3 -m venv .devenv
  source .devenv/bin/activate
 ```
+
+The source code for the Lambda functions is under src.
 
 * Unit tests the Lambda function
 
@@ -24,7 +32,7 @@ pytest
 * Deploy using CDK
 
 ```sh
-#under cdk
+#under cdk folder
 cdk synth 
 cdk deploy
 ```

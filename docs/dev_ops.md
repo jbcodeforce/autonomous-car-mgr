@@ -1,6 +1,12 @@
 # DevOps
 
-### Error Handling by execution model
+## Using AWS Powertools
+
+[AWS Powertools](https://docs.powertools.aws.dev/lambda/python/latest/) includes methods and libraries for quickly implementing consistent logging, metrics, and traces inside your codebase.
+
+Use X-Ray to understand end to end event flow, cross components of your solution.
+
+## Error Handling by execution model
 
 As a general practice, implement error handling within each function rather than propagating errors up the call chain. This prevents failures in one function from impacting others.
 
@@ -31,3 +37,9 @@ There are different ways to support error handling, depending of the integration
 
 ???+ Dead-letter queues
     We may turn on dead-letter queues and create dedicated dead-letter queue resources using Amazon SNS or Amazon SQS for individual Lambda functions that are invoked by asynchronous event source.
+
+## Monitoring
+
+## CI/CD
+
+We recommend to follow [this workshop - Building CI/CD pipelines for Lambda canary deployments using AWS CDK](https://catalog.us-east-1.prod.workshops.aws/workshops/5195ab7c-5ded-4ee2-a1c5-775300717f42/en-US).

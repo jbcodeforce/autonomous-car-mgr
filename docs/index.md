@@ -26,8 +26,8 @@ A simple application to manage an inventory of Autonomous Robot Cars. This is to
 * How to optimize Lambda function for performance?
 * Review strategy to minimize cold start?
 * Optimizing for high-throughput?
-* How does the allocated memory size affect the execution time and cost of Lambda functions?
-* How to balance performance / cost?
+* [x] How does the allocated memory size affect the execution time and cost of Lambda functions?
+* [x] How to balance performance / cost?
 
 [>>> See discussions in scaling section](./scaling.md)
 
@@ -51,7 +51,7 @@ A simple application to manage an inventory of Autonomous Robot Cars. This is to
 
 ### Development, Operation and CI/CD
 
-* What are the best practices for deploying Lambda functions in a CI/CD pipeline, and how to manage version control and rollbacks?
+* [ ] What are the best practices for deploying Lambda functions in a CI/CD pipeline, and how to manage version control and rollbacks?
 * How to support blue-green deployments or canary releases with AWS Lambda?
 * How should error handling be implemented in AWS Lambda to ensure reliability and fault tolerance?
 * What to monitor and logging tools or practices do you recommend for AWS Lambda functions to ensure proactive issue resolution?
@@ -66,8 +66,9 @@ A simple application to manage an inventory of Autonomous Robot Cars. This is to
 
 ## A benchmark application
 
-To support the discussions addressed in this repository, I will use a simple application using API Gateway, Lambda, DynamoDB and adds feature on top of it.
+To support the discussions addressed in this repository, I will use a simple application using API Gateway, Lambda, DynamoDB and add some logging and monitoring features on top of it.
 
 The application starts with the simplest deployment as illustrated in the following diagrams:
 
 ![](./diagrams/acm-base.drawio.png)
+

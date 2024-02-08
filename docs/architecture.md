@@ -190,3 +190,4 @@ Pay attention to concurrent requests quotas per service, and payload size constr
 
 As some quotas are set a the account level. First separate dev and production accounts. Leverage [AWS Organizations](https://aws.amazon.com/organizations/) to manage all those accounts, the security policies... Use developer account to be able to test lambda with some production data, without impacting the quota limits.
 
+See [the scaling section...](./scaling.md)
