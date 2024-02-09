@@ -93,6 +93,21 @@ The execution environment follows the [life cycle](https://docs.aws.amazon.com/l
 * Each lambda function has a unique ARN.
 * Deployment package is a zip or container image.
 
+### Event sourcing
+
+Event sourcing is a design pattern often used in EDA adoption. Most business applications are state based persistent where any update changes the previous state of the business entities. The database keeps the last committed update. But some business application needs to **explain how an entity reaches its current state**. For that, the application needs to keep history of business facts.
+
+**Event sourcing** persists the state of a business entity, such an Order, as a sequence of state-changing events or immutable "facts", ordered over time. Event sourcing has its roots in the domain-driven design community.
+
+When the state of a system changes, an application issues a notification event of the state change. Any interested parties can become consumers of the event and take required actions.  The state-change event is immutable stored in an event log or event store in time order.  The event log becomes the principal source of truth. The system state can be recreated from a point in time by reprocessing the events. The history of state changes becomes an audit record for the business and is often a useful source of data for business analysts to gain insights into the business.
+
+Therefore Lambda function, when it manages a business entity, can generate events to a event backbone, or persists the event in a time based data store like [Amazon Timestream](https://docs.aws.amazon.com/timestream/latest/developerguide/what-is-timestream.html), which supports trillions of data points per day, keeping recent data in memory and moving historical data to a cost optimized storage tier based upon user defined policies. It includes a query engine with time based analytic functions.
+
+Timestream is serverless and automatically scales up or down to adjust capacity and performance. The architecture uses different layers to increase decoupling, and a cellular architecture using smaller copies of the time tables, with specific networking end-points.
+
+An alternate to Lambda directly writing to TimeStream, the Lambda can write in an event outbox table, and the Change Data Capture or a Streaming feature can push the event to a queue then to TimeStream.
+
+Some implementation leverages Kafka to support event sourcing. The major question will be how long in the past the application needs to come back to. Kafka has a retention period, that can be tuned at the topic level, so if the retention is not covering the expected playback period, then event sourcing will miss events.
 
 ## Fit for purpose
 

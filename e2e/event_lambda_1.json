@@ -1,0 +1,6 @@
+{
+    "httpMethod":"GET",
+    "pathParameters":{
+        "car_id":"1"
+    }
+}
