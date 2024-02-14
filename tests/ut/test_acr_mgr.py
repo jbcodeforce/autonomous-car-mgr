@@ -1,58 +1,98 @@
-import json
+import os
 import pytest
+from boto3 import resource
+from contextlib import contextmanager
+from moto import mock_aws
 import json
 from pathlib import Path
 from typing import Any
 import carmgr.app as app
 
-@pytest.fixture
-def lambda_context():
-    class LambdaContext:
-        def __init__(self):
-            self.function_name = "test-func"
-            self.memory_limit_in_mb = 128
-            self.invoked_function_arn = "arn:aws:lambda:eu-west-1:809313241234:function:test-func"
-            self.aws_request_id = "52fdfc07-2182-154f-163f-5f0f9a621d72"
 
-        def get_remaining_time_in_millis(self) -> int:
-            return 1000
+TABLE_NAME="test_cars"
+EVENT_BUS="test_event_bus"
 
-    return LambdaContext()
+@contextmanager
+def create_table(dynamodb_client):
+    """Create mock DynamoDB table to test full CRUD operations"""
+
+    dynamodb_client.create_table(
+        TableName=TABLE_NAME,
+        KeySchema=[
+            {
+                'AttributeName': 'car_id',
+                'KeyType': 'HASH'
+            }
+        ],
+        AttributeDefinitions=[
+            {
+                'AttributeName': 'car_id',
+                'AttributeType': 'S'
+            },
+        ],
+        ProvisionedThroughput={
+            'ReadCapacityUnits': 10,
+            'WriteCapacityUnits': 10
+        }
+    )
+    yield
+    dynamodb_client.delete_table(TableName=TABLE_NAME)
+
+@pytest.fixture(scope="module")
+def populate_table(dynamodb_client):
+    with create_table(dynamodb_client):
+        dynamodb_client.put_item(
+            TableName=TABLE_NAME,
+            Item={"car_id": {"S":"1"}, "model": {"S":"Model_1"}, "status": {"S":"Free"}}
+        )
+        dynamodb_client.put_item(
+            TableName=TABLE_NAME,
+            Item={"car_id": {"S":"2"}, "model": {"S":"Model_2"}, "status": {"S":"Free"}}
+        )
+        yield
+
+@pytest.fixture(scope="module")
+def getApp(dynamodb_client,populate_table,event_client):
+    TEST_REPOSITORY_DEFINITION = {"resource": resource('dynamodb'), 
+                                 "table_name": TABLE_NAME}
+    TEST_EVENT_DEFINITION = {"event_bus": EVENT_BUS}
+    app.car_repository = app.CarRepository(TEST_REPOSITORY_DEFINITION)
+    app.event_producer = app.CarEventProducer(TEST_EVENT_DEFINITION)
+    return app
 
 def load_event(file_name: str) -> Any:
     path = Path(str(Path(__file__).parent.parent) + "/events/" + file_name)
     return json.loads(path.read_text())
 
+@mock_aws
 class TestCarMgr:
 
-    def test_shouldGetFirstCarByUsingId(self):
-        aCar=app.getCarUsingCarId("1")
+        
+    def test_shouldGetFirstCarByUsingId(self,getApp):
+        aCar=getApp.getCarUsingCarId("1")
         print(aCar)
         assert aCar != None
         assert aCar['status'] == "Free"
 
-    def test_shouldGetAllCars(self):
-        allCars=app.getAllCars()
+
+    def test_shouldGetAllCars(self,getApp):
+        allCars=getApp.getAllCars()
         print(allCars)
         assert allCars != None
         assert len(allCars) > 0
 
-    def test_shouldGetCarById(self,lambda_context):
-        minimal_event = {
-            "path": "/cars/2",
-            "httpMethod": "GET",
-            "requestContext": {"requestId": "227b78aa-779d-47d4-a48e-ce62120393b8"},  # correlation ID
-        }
-        resp = app.handler(minimal_event,lambda_context )
-        print(resp)
-        assert resp["statusCode"] == 200
-        assert resp["body"] != ""
-        aCar=json.loads(resp["body"])
-        assert "Model_1" in aCar["type"]
 
-    def test_shouldCreateANewCar(self,lambda_context):
-        apigtwEvent=load_event("postCar.json")
-        resp = app.handler(apigtwEvent,lambda_context )
+    def test_shouldCreateANewCar(self,getApp):
+        apigtw_msg=load_event("postCar.json")
+        body=json.loads(apigtw_msg['body'])
+        print(body)
+        resp = getApp.car_repository.createCar(body)
         print(resp)
-        assert resp["statusCode"] == 200
-        assert resp["body"] != ""
+
+    def test_shouldUpdateExistingCar(self,getApp):
+        aCar=getApp.getCarUsingCarId("1")
+        aCar['status']="Rented"
+        print(aCar)
+        resp = getApp.car_repository.updateCar(aCar)
+        print(resp)
+

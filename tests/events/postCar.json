@@ -44,7 +44,7 @@
       "time": "12/Mar/2020:19:03:58 +0000",
       "timeEpoch": 1583348638390
     },
-    "body": "{\"nb_passenger\":\"4\",\"car_id\":\"5\",\"longitude\":\"-122.42\",\"status\":\"InCourse\",\"latitude\":\"37.7\",\"type\":\"Model_2\"}",
+    "body": "{\"nb_passengers\":\"4\",\"car_id\":\"5\",\"model\":\"Model_2\",\"year\":\"2024\",\"longitude\":\"-122.42\",\"status\":\"InCourse\",\"latitude\":\"37.7\"}",
     "pathParameters": {
       "parameter1": "value1"
     },

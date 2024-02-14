@@ -1,8 +1,32 @@
 # DevOps
 
-Powertools has a REST resolver to annotate function to support different REST resource paths and HTTP verbs. It leads to cleaner code, and easier to test the business logic. When using Powertools REST resolver, the API Gateway API needs to be a proxy integration to Lambda as the REST resolver will use the metadata of the request.
+## Tools to support code deployment
+
+The core infrastructure as code on AWS is [AWS CloudFormation](https://aws.amazon.com/cloudformation). If developers or devops engineers prefer to use programming language to define service configuration and code deployment the [AWS Cloud Development Kit](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html) is a powerful solution. It uses code which can be integrated in the same Git repository as application / microservice code. In the Serverless service [AWS Serverless Application Model](https://aws.amazon.com/serverless/sam/) is a declarative way by using higher level template than CloudFormation.
+
+CDK uses an imperative programming style which can make complex logic and conditionals easier to implement compared to the declarative style of AWS SAM templates.
+
+SAM CLI supports local development and testing of Lambda apps, CDK provides a full-featured local development environment with watch mode.
+
+Developer can use the AWS SAM CLI to locally test and build serverless applications defined using the AWS Cloud Development Kit (AWS CDK). [see Getting started with AWS SAM and the AWS CDK.](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-cdk-getting-started.html).
+
+
+## Code boilerplate
+
+Powertools has a REST resolver to annotate function to support different REST resource paths and HTTP verbs. It leads to cleaner code, and easier to test the business logic: each path and HTTP method is implemented by different function
+
+```python
+@app.get("/cars/<car_id>")
+@tracer.capture_method
+def getCarUsingCarId(car_id: str):
+    car = car_table.get_item( Key={'car_id': car_id})
+    logger.debug(car)
+    return car['Item']
+```
 
 [See the app.py code](https://github.com/jbcodeforce/autonomous-car-mgr/blob/main/src/carmgr/app.py) and how to unit test it using pytest [test_acr_mgr.py](https://github.com/jbcodeforce/autonomous-car-mgr/blob/main/tests/ut/test_acr_mgr.py).
+
+When using Powertools REST resolver, the API Gateway API needs to be a proxy integration to Lambda as the REST resolver will use the metadata of the request.
 
 ## Error Handling by execution model
 

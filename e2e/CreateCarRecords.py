@@ -26,7 +26,7 @@ carTable.put_item(
      "type": "Model_1", 
      "latitude": "37.7", 
      "longitude": "-122.42",
-     "status": "Free",
+     "status": "Available",
      "nb_passenger":  0
    })
 

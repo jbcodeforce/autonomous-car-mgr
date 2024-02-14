@@ -1,4 +1,4 @@
-# Autonomous Car Manager Service
+# [Autonomous Car Manager Service](https://jbcodeforce.github.io/autonomous-car-mgr/)
 
 
 A simple application to manage an inventory of Autonomous Robot Cars. This is to demonstrate some of the microservice implementation with Amazon Lambda with functional and stress testing.
@@ -42,5 +42,7 @@ cdk deploy
 The implementation for the Lambda use Python and [AWS Powertools](https://docs.powertools.aws.dev/lambda/python/latest/) to get the boiler plate for monitoring and tracing. 
 
 Infrastructure as Code is done using Python CDK.
+
+![](https://jbcodeforce.github.io/yarfba/serverless/diagrams/event-b-solution.drawio.png)
 
 
