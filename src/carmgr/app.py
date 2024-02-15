@@ -11,7 +11,7 @@ from aws_lambda_powertools import Metrics
 from aws_lambda_powertools.metrics import MetricUnit
 
 try:
- from acm_model import AutonomousCar, AutonomousCarEvent
+ from .acm_model import AutonomousCar, AutonomousCarEvent
 except ImportError:
     from carmgr.acm_model import AutonomousCar, AutonomousCarEvent
     
@@ -67,20 +67,22 @@ class CarRepository:
 
 class CarEventProducer:
     def __init__(self, event_backbone_resource):
-        self.event_backbone = boto3.client('events'),
+        self.event_backbone = boto3.client('events')
         self.event_bus = event_backbone_resource["event_bus"]
 
     def produceCarEvent(self, aCar: AutonomousCar, eventType: str):
-        carEvent=AutonomousCarEvent.fromAutonomousCar(aCar=aCar, eventType=eventType)
-        logger.debug(carEvent)
-        self.event_backbone.put_events(
-            Entries=[
-                {
+        payload=AutonomousCarEvent.fromAutonomousCar(aCar=aCar,eventType=eventType)
+        carEvent = {
                     'Source': 'acs.acm',
                     'DetailType': eventType, #'acme.acs.acm.events.CarUpdated',
-                    'Detail': json.dumps(carEvent),
+                    'Detail': payload.model_dump_json(),
                     'EventBusName': self.event_bus
                 }
+        logger.info(carEvent)
+        
+        return self.event_backbone.put_events(
+            Entries=[
+                carEvent
             ]
         )
 
@@ -103,7 +105,12 @@ def createCar():
     car: dict = app.current_event.json_body 
     if 'car_id' not in car:
         car['car_id'] = str(uuid.uuid4())
-    
+    if 'status' not in car:
+        car['status'] = 'Available'
+    if 'latitude' not in car or car['latitude'] == None:
+        car['latitude'] = "0"
+    if 'longitude' not in car or car['longitude'] == None:
+        car['longitude'] = "0"
     car_repository.createCar(car)
     
     event_producer.produceCarEvent(aCar=AutonomousCar.model_validate(car), eventType="acme.acs.acm.events.CarCreated")

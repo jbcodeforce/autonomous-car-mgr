@@ -26,14 +26,14 @@ class AutonomousCarEvent(BaseModel):
     event_source: str=None
     event_version: str=None
     
-    def fromAutonomousCar(aCar: AutonomousCar):
+    def fromAutonomousCar(aCar: AutonomousCar, eventType: str):
         carEvent = AutonomousCarEvent(
             car_id=aCar.car_id,
             model=aCar.model,
             year=aCar.year,
             status=aCar.status,
             nb_passengers=aCar.nb_passengers,
-            event_type="car.updated",
+            event_type = eventType,
             event_source="acs.acm",
             event_version="1.0"
         )

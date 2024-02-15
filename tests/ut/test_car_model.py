@@ -1,10 +1,11 @@
-import carmgr.acm_model as acm_model
+
+from carmgr.acm_model import AutonomousCar, AutonomousCarEvent
 import json 
 from pydantic.json import pydantic_encoder
 
 
 def test_car_serialization():
-    aCar = acm_model.AutonomousCar(car_id="car01",
+    aCar = AutonomousCar(car_id="car01",
                 year= 2024,
                 model= "Model_1",
                 status= "Available"
@@ -18,23 +19,23 @@ def test_car_serialization():
     
 
 def test_car_deserialization():
-    newCar=acm_model.AutonomousCar.model_validate_json('{"car_id":"car02","model":"Model_2","year":2024,"status":"Available"}')
+    newCar=AutonomousCar.model_validate_json('{"car_id":"car02","model":"Model_2","year":2024,"status":"Available"}')
     assert newCar.model == "Model_2"
 
 
 def test_createEvent():
-    aCar = acm_model.AutonomousCar(car_id="XXXXX",
+    aCar = AutonomousCar(car_id="XXXXX",
                 year= 2024,
                 model= "Model_1",
                 status= "Available",
                 nb_passengers=0,
                 )
-    aEvent = acm_model.AutonomousCarEvent.fromAutonomousCar(aCar)
+    aEvent = AutonomousCarEvent.fromAutonomousCar(aCar,"a.test.event.type")
     assert aEvent.status == "Available"
     
 
 def test_car_to_dict():
-    aCar = acm_model.AutonomousCar(car_id="XXXXX",
+    aCar = AutonomousCar(car_id="XXXXX",
                 year= 2024,
                 model= "Model_1",
                 status= "Available",
@@ -54,5 +55,7 @@ def test_car_from_dict():
                 "status": "Available",
                 "nb_passengers":0,
                 }
-    aCar = acm_model.AutonomousCar.model_validate(aDict)
+    aCar = AutonomousCar.model_validate(aDict)
     assert aCar.model == "Model_1"
+    assert aCar.year == 2024
+    assert aCar.status == "Available"

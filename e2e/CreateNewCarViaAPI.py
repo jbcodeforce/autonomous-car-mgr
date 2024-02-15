@@ -3,7 +3,7 @@ import requests,json
 if __name__ == '__main__':
 
     carJson={"nb_passengers":"4",
-             "car_id":"5",
+             "car_id":"10",
              "model":"Model_2",
              "year":"2024",
              "longitude":"-122.42",

@@ -1,5 +1,6 @@
 from aws_cdk import (
     # Duration,
+    BundlingOptions,
     Environment,
     RemovalPolicy,
     Stack,
@@ -29,12 +30,13 @@ class ACMmainStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
 
         carTable=self.defineCarTableDataBase()
-        acm_lambda,alias= self.defineAutonomousCarManagerAsLambdaFct(carTable,env)
-        self.defineAutonomousCarManagerAPIs(alias)
-
         carEventBus = aws_events.EventBus(self, "carsEventBus",
                     event_bus_name="cars"
                 )
+        acm_lambda, alias= self.defineAutonomousCarManagerAsLambdaFct(carTable,carEventBus,env)
+        self.defineAutonomousCarManagerAPIs(alias)
+
+        
         carEventBus.grant_all_put_events(acm_lambda)
         self.defineSNSTargetToEventBus(carEventBus)
         self.defineCWlogsAsTargetToEventBus(carEventBus)
@@ -54,7 +56,8 @@ class ACMmainStack(Stack):
                                    'lambda.amazonaws.com'),
                                managed_policies=[managed_policy_insights, managed_policy_basic_exec])
         
-       
+
+
     def defineCarTableDataBase(self):
         carTable = dynamodb.TableV2(self, "CarsTable",
                 table_name="acm_cars",
@@ -70,7 +73,9 @@ class ACMmainStack(Stack):
         )
         return carTable
 
-    def defineAutonomousCarManagerAsLambdaFct(self, carTable,env):
+
+
+    def defineAutonomousCarManagerAsLambdaFct(self, carTable,carEventBus,env):
         lambda_role = self.defineUserRoleForLambdaExecution()
         powertools_layer = aws_lambda.LayerVersion.from_layer_version_arn(
             self,
@@ -80,12 +85,19 @@ class ACMmainStack(Stack):
         current_date =  datetime.now().strftime('%d-%m-%Y')   
         acm_lambda = aws_lambda.Function(self, 'CarMgrService',
             runtime=aws_lambda.Runtime.PYTHON_3_11,
-            code= aws_lambda.Code.from_asset('../src/carmgr'),
+            code= aws_lambda.Code.from_asset(path="../src/",
+                                             bundling=BundlingOptions(
+                                                 image= aws_lambda.Runtime.PYTHON_3_11.bundling_image,
+                                                 command= [
+                                                     'bash','-c','pip install -r requirements.txt -t /asset-output && cp -rau . /asset-output'
+                                                 ],
+                                            )),
             function_name= "CarMgrService",
-            handler='app.handler',
+            handler='carmgr.app.handler',
             role=lambda_role,
             layers=[powertools_layer],
             environment = {
+                "CAR_EVENT_BUS":carEventBus.event_bus_name,
                 "CAR_TABLE_NAME":carTable.table_name,
                 "POWERTOOLS_SERVICE_NAME": "CarManager",
                 "POWERTOOLS_METRICS_NAMESPACE": "CarManager",
@@ -96,6 +108,7 @@ class ACMmainStack(Stack):
                 removal_policy = RemovalPolicy.RETAIN
             )
         )
+
         carTable.grant_read_write_data(acm_lambda)
 
         new_version = acm_lambda.current_version

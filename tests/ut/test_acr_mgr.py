@@ -7,10 +7,12 @@ import json
 from pathlib import Path
 from typing import Any
 import carmgr.app as app
+from unittest import mock
 
 
 TABLE_NAME="test_cars"
 EVENT_BUS="test_event_bus"
+
 
 @contextmanager
 def create_table(dynamodb_client):
@@ -58,6 +60,12 @@ def getApp(dynamodb_client,populate_table,event_client):
     TEST_EVENT_DEFINITION = {"event_bus": EVENT_BUS}
     app.car_repository = app.CarRepository(TEST_REPOSITORY_DEFINITION)
     app.event_producer = app.CarEventProducer(TEST_EVENT_DEFINITION)
+    eventbridge_client = mock.Mock()
+    eventbridge_client.put_events.return_value = {
+        'statusCode': 200,
+        'body': json.dumps('Car added')
+    }
+    app.event_producer.event_backbone=eventbridge_client
     return app
 
 def load_event(file_name: str) -> Any:
@@ -88,6 +96,16 @@ class TestCarMgr:
         print(body)
         resp = getApp.car_repository.createCar(body)
         print(resp)
+
+    def test_createCar(self,lambda_context,getApp):
+    
+            aCar=getApp.AutonomousCar(model="Model_2", car_id="XXXXX", status="Available", year=2024)
+            aCarJson = aCar.model_dump_json()
+            print(aCarJson)
+            aAPIevent={ "httpMethod": "POST", "path":"/cars","body": aCarJson}
+            resp=getApp.handler(aAPIevent, lambda_context)
+            print(resp)
+
 
     def test_shouldUpdateExistingCar(self,getApp):
         aCar=getApp.getCarUsingCarId("1")
