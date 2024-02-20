@@ -184,6 +184,8 @@ It can also be a consumer, and Lambda has native support for events produced by 
 
 ## Integration with other services
 
+AWS Lambda has a [lot of other Amazon service integrations](https://docs.aws.amazon.com/lambda/latest/dg/lambda-services.html). We will focus here on the most commons:
+
 ### APIs
 
 [API Gateway](https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway.html) can define webSocket, HTTP or REST APIs integrated with Lambda function. HTTP APIs are newer and are built with the API Gateway version 2 API. REST APIs support more options for authentication and authorization.. In most case one HTTP verb and path are mapped to one handler function, but it should not be the best approach: some lambdas are implementing a microservice to manage a business entity and may support the RESTful operations on the entity. The resource is `cars` and HTTP GET, POST, PUT, DELETE may be mapped to one function. In this case the full HTTP request is passed to lambda. [AWS Powertools can be used to route](https://docs.powertools.aws.dev/lambda/python/latest/core/event_handler/api_gateway/#api-gateway-rest-api) to the good function to process the request.
@@ -204,6 +206,10 @@ def handler(message: dict, context: LambdaContext) -> dict:
 Amazon API Gateway gets permission to invoke the function from the function's resource-based policy with the principal being the `apigateway.amazonaws.com`. 
 
 [See getting started tutorial](https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway-tutorial.html)
+
+### Function URLs
+
+Lambda also supports [function URLs](https://docs.aws.amazon.com/lambda/latest/dg/lambda-urls.html), a built-in HTTPS endpoint for invoking functions. No need for API Gateway and ALB.
 
 ### EventBridge as a source
 
@@ -232,3 +238,4 @@ As some quotas are set a the account level. First separate dev and production ac
 Add more accounts over time to address specific deployment, growth per region.
 
 See [the scaling section...](./scaling.md)
+

@@ -33,11 +33,11 @@ A simple application to manage an inventory of Autonomous Robot Cars. This is to
 
 ### Security
 
-* [ ] What are the best practices to secure Lambda functions, especially in terms of managing permissions and access controls?
-* [ ] How should sensitive data be managed within Lambda environments?
-* [ ] How to manage secrets?
-* [ ] How to manage IAM roles and permissions for Lambda functions to ensure principle of least privilege?
-* [ ] How to support encrypting sensitive data processed by Lambda functions, both in transit and at rest?
+* [X] What are the best practices to secure Lambda functions, especially in terms of managing permissions and access controls?
+* [X] How should sensitive data be managed within Lambda environments?
+* [X] How to manage secrets?
+* [X] How to manage IAM roles and permissions for Lambda functions to ensure principle of least privilege?
+* [X] How to support encrypting sensitive data processed by Lambda functions, both in transit and at rest?
 
 [>>> See discussions in security section](./security.md)
 

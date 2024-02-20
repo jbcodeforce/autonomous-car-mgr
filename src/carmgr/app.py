@@ -90,6 +90,19 @@ class CarEventProducer:
 car_repository=CarRepository(DEFAULT_REPOSITORY_DEFINITION)
 event_producer=CarEventProducer(DEFAULT_EVENT_PRODUCER)
 
+# Demo code
+secret_name=os.getenv("secret_name",default="ACS_secret")
+region=os.getenv("AWS_DEFAULT_REGION")
+session = boto3.session.Session()
+secret_client=session.client(service_name="secretsmanager")
+try:
+        secret_value_response = secret_client.get_secret_value(
+            SecretId=secret_name
+        )
+        logger.info(f"secret read from AWS secret {secret_value_response['username']}")
+except Exception as e:
+    logger.error(e)
+
 @app.get("/cars")
 @tracer.capture_method
 def getAllCars():

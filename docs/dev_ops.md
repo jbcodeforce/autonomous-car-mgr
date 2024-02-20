@@ -1,19 +1,23 @@
 # DevOps
 
+As solution deployed on AWS, and integrating with AWS services, developers need to study the [SDK (e.g. Python boto3 module)](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html). 
+
 ## Tools to support code deployment
 
-The core infrastructure as code on AWS is [AWS CloudFormation](https://aws.amazon.com/cloudformation). If developers or devops engineers prefer to use programming language to define service configuration and code deployment the [AWS Cloud Development Kit](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html) is a powerful solution. It uses code which can be integrated in the same Git repository as application / microservice code. In the Serverless service [AWS Serverless Application Model](https://aws.amazon.com/serverless/sam/) is a declarative way by using higher level template than CloudFormation.
+The core element of the infrastructure as code (IaC) on AWS is [AWS CloudFormation](https://aws.amazon.com/cloudformation). If developers or devops engineers prefer to use programming language to define service configuration and code deployment the [AWS Cloud Development Kit](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html) is a powerful solution. It uses code which can be integrated in the same Git repository as application / microservice code. 
+
+For serverless implementation, [AWS Serverless Application Model (SAM)](https://aws.amazon.com/serverless/sam/) is a declarative way to define IaC, by using higher level template than CloudFormation.
 
 CDK uses an imperative programming style which can make complex logic and conditionals easier to implement compared to the declarative style of AWS SAM templates.
 
 SAM CLI supports local development and testing of Lambda apps, CDK provides a full-featured local development environment with watch mode.
 
-Developer can use the AWS SAM CLI to locally test and build serverless applications defined using the AWS Cloud Development Kit (AWS CDK). [see Getting started with AWS SAM and the AWS CDK.](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-cdk-getting-started.html).
+Developer can use the AWS SAM CLI to locally test and build serverless applications defined using the AWS Cloud Development Kit (AWS CDK). [See Getting started with AWS SAM and the AWS CDK.](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-cdk-getting-started.html).
 
 
 ## Code boilerplate
 
-Powertools has a REST resolver to annotate function to support different REST resource paths and HTTP verbs. It leads to cleaner code, and easier to test the business logic: each path and HTTP method is implemented by different function
+[AWS Powertools](https://docs.powertools.aws.dev/lambda/python/) has a REST resolver to annotate function to support different REST resource paths and HTTP verbs. It leads to cleaner code, and easier to test the business logic: each path and HTTP method is implemented by different function:
 
 ```python
 @app.get("/cars/<car_id>")
@@ -27,6 +31,86 @@ def getCarUsingCarId(car_id: str):
 [See the app.py code](https://github.com/jbcodeforce/autonomous-car-mgr/blob/main/src/carmgr/app.py) and how to unit test it using pytest [test_acr_mgr.py](https://github.com/jbcodeforce/autonomous-car-mgr/blob/main/tests/ut/test_acr_mgr.py).
 
 When using Powertools REST resolver, the API Gateway API needs to be a proxy integration to Lambda as the REST resolver will use the metadata of the request.
+
+```python
+def handler(message: dict, context: LambdaContext) -> dict:
+    return app.resolve(message, context)
+```
+
+### Unit testing
+
+The unittest can be done using mock library to bypass remote calls. Tests may be defined using pytest library and commands.
+
+For example the folder: [tests/ut](https://github.com/jbcodeforce/autonomous-car-mgr/tree/main/tests/ut) includes test case definitions to test the microservice. 
+
+```sh
+pytest -vs
+```
+
+* Example of test mock for a dynamodb client, using [moto library](https://docs.getmoto.org/en/latest/)
+
+```python
+from moto import mock_aws
+
+@pytest.fixture(scope="module")
+def dynamodb_client(aws_credentials):
+    """DynamoDB mock client."""
+    with mock_aws():
+        conn = boto3.client("dynamodb", region_name="us-west-2")
+        yield conn
+```
+
+* With injection to tune the app under test
+
+```python
+@pytest.fixture(scope="module")
+def getApp(dynamodb_client,populate_table,event_client,secret_client):
+```
+
+See the full code in [test_acr_mgr.py](https://github.com/jbcodeforce/autonomous-car-mgr/blob/main/tests/ut/test_acr_mgr.py).
+
+### Deployment
+
+Lambda can use Layer to simplify code management and reuse. The Powertools library for example can be used as a layer.
+
+```python
+powertools_layer = aws_lambda.LayerVersion.from_layer_version_arn(
+            self,
+            id="lambda-powertools",
+            layer_version_arn=f"arn:aws:lambda:{env.region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:61"
+        )
+
+# referenced in the function definition
+ acm_lambda = aws_lambda.Function(self, 'CarMgrService',
+     ...
+    layers=[powertools_layer],
+```
+
+But local dependencies can also being deployed as a zip (See [the product documentation- Working with .zip file archives for Python](https://docs.aws.amazon.com/lambda/latest/dg/python-package.html#python-package-create-dependencies)).
+
+#### CDK
+
+See an example of CDK application to deploy API Gateway, Lambda function implementing a simple microservice, and DynamoDB table [here.](https://github.com/jbcodeforce/autonomous-car-mgr/blob/main/cdk/acm/main_stack.py). 
+
+See [AWS CDK Python Reference](https://docs.aws.amazon.com/cdk/api/v2/python/) to get examples and API description to create anything in AWS.
+
+As a pre-requisite developers need to bootstrap CDK in the target deployment region using `cdk bootstrap`. Then any code or IaC change can be deployed using:
+
+```sh
+cdk deploy
+```
+
+which creates a CloudFormation template.
+
+#### SAM
+
+### Integration tests
+
+Once the solution is deployed we can test by using the API endpoints. The tests can be defined using Python script files (under [e2e folder](https://github.com/jbcodeforce/autonomous-car-mgr/tree/main/e2e)).
+
+```sh
+python GetCarByIdUsingAPI.py 2
+```
 
 ## Error Handling by execution model
 

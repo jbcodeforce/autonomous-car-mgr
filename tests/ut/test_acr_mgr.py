@@ -54,7 +54,7 @@ def populate_table(dynamodb_client):
         yield
 
 @pytest.fixture(scope="module")
-def getApp(dynamodb_client,populate_table,event_client):
+def getApp(dynamodb_client,populate_table,event_client,secret_client):
     TEST_REPOSITORY_DEFINITION = {"resource": resource('dynamodb'), 
                                  "table_name": TABLE_NAME}
     TEST_EVENT_DEFINITION = {"event_bus": EVENT_BUS}

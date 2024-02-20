@@ -14,9 +14,14 @@ from aws_cdk import (
      CfnOutput,
      aws_logs,
     aws_iam,
+    aws_secretsmanager,
 )
 from datetime import datetime
+import json
 from constructs import Construct
+
+
+DEFAULT_SECRET_NAME="ACS_secret"
 
 '''
 Define DynamoDB table to persist autonomous cars as part of the robot taxi inventory.
@@ -36,11 +41,12 @@ class ACMmainStack(Stack):
         acm_lambda, alias= self.defineAutonomousCarManagerAsLambdaFct(carTable,carEventBus,env)
         self.defineAutonomousCarManagerAPIs(alias)
 
-        
         carEventBus.grant_all_put_events(acm_lambda)
         self.defineSNSTargetToEventBus(carEventBus)
         self.defineCWlogsAsTargetToEventBus(carEventBus)
-        
+        secrets=self.secret_in_aws_secrets()
+        secrets.grant_read(grantee=acm_lambda)
+    # end of constructor ------------------    
 
 
     def defineUserRoleForLambdaExecution(self):
@@ -99,6 +105,7 @@ class ACMmainStack(Stack):
             environment = {
                 "CAR_EVENT_BUS":carEventBus.event_bus_name,
                 "CAR_TABLE_NAME":carTable.table_name,
+                "secret_name": DEFAULT_SECRET_NAME,
                 "POWERTOOLS_SERVICE_NAME": "CarManager",
                 "POWERTOOLS_METRICS_NAMESPACE": "CarManager",
                 "POWERTOOLS_LOG_LEVEL": "INFO",
@@ -184,3 +191,18 @@ class ACMmainStack(Stack):
         CfnOutput(self, "CW Logs Group", value=cwLogsGroup.log_group_name)
         CfnOutput(self, "CW Logs Group ARN", value=cwLogsGroup.log_group_arn)
         CfnOutput(self, "CW Logs Group Name", value=cwLogsGroup.log_group_name)
+
+    """
+    Create a new secret in AWS SecretManager
+    Secret DEFAULT_SECRET_NAME will have multiple object values as defined by secret_string_template
+    and with specific encrypted value of the generate_string_key
+    """
+    def secret_in_aws_secrets(self):
+        return aws_secretsmanager.Secret(self,
+                                  "ACMsecrets",
+                                secret_name=DEFAULT_SECRET_NAME,
+                                generate_secret_string=aws_secretsmanager.SecretStringGenerator(
+                                    secret_string_template=json.dumps({"username": "postgres"}),
+                                    generate_string_key="password",
+                                    exclude_characters="/@"
+                                ))

@@ -48,3 +48,9 @@ def event_client(aws_credentials):
     with mock_aws():
         conn = boto3.client("events", region_name="us-west-2")
         yield conn
+
+@pytest.fixture(scope="module")
+def secret_client(aws_credentials):
+    with mock_aws():
+        conn = boto3.client("eventsmanager", region_name="us-west-2")
+        yield conn
