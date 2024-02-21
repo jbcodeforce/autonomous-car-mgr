@@ -1,7 +1,15 @@
 # Architecture
 
-[AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/welcome.html) helps you to run code without managing server.
+[AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/welcome.html) helps you to run code without managing server. But this does not mean it is the unique serverless capability in AWS, and you should not consider adopting good design principles that we can summarize as:
 
+## Design Principles
+
+* **Stop guessing your capacity needs**: use as much or as little capacity as you need, and scale up and down automatically.
+* **Test systems at production scale**, then decommission the development resources.
+* **Automate to make architectural experimentation easier**, using infrastructure as code.
+* **Allow for evolutionary architectures**: the capability to automate and test on demand, lowers the risk of impact from design changes. This allows systems to evolve over time so that businesses can take advantage of innovations as a standard practice.
+* **Drive architectures using data**: In the cloud, you can collect data on how your architectural choices affect the behavior of your workload. This lets you make fact-based decisions on how to improve your workload.
+* **Improve through game days** to simulate events in production. This will help you understand where improvements can be made and can help develop organizational experience in dealing with events.
 
 ## Microservice and Lambda
 
@@ -56,42 +64,58 @@ A  Lambda function has three primary components – trigger, code, and configura
 
 Servers do not run continuously, and a function invocation is time boxed to 15 minutes. 
 
-### Run Time architecture
+### Lambda run time architecture
 
 The execution environment follows the [life cycle](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html) as defined below (time goes from left to right):
 
 ![](./images/lamba-env-lc.png){ width=800 }
 
 * In the **Init phase**, Lambda creates or unfreezes an execution environment with the configured resources, downloads the code for the function and all the needed layers, initializes any extensions, initializes the runtime, and then runs the function’s initialization code. After init, the environment is 'Warm'. The extension and runtime inits is part of the `cold start` (<1s).
-* In the **Invoke phase**, Lambda invokes the function handler. After the function runs to completion, Lambda prepares to handle another function invocation.
+* In the **Invoke phase**, Lambda invokes the function handler. After the function runs to completion, Lambda prepares to handle another function invocation. After the execution completes, the execution environment is "frozen", for reuse by another request. (Warm start)
  * During **Shutdown phase:** Lambda shuts down the runtime, alerts the extensions to let them stop cleanly, and then removes the environment.
 
 ???- Info "Lambda Extension"
     Lambda supports external and internal [extensions](https://docs.aws.amazon.com/lambda/latest/dg/lambda-extensions.html). An external extension runs as an independent process in the execution environment and continues to run after the function invocation is fully processed. Can be used for logging, monitoring, integration...
 
+
+* A function's concurrency is the number of execution environment instances that serve requests at a given time.
+* There is at least one runtime which matches the programming language (Java, Node.js, C#, Go, or Python).
 * The Lambda service is split into the control plane and the data plane. The control plane provides the management APIs (for example, `CreateFunction`, `UpdateFunctionCode`). The data plane is where Lambda's API resides to invoke the Lambda functions. It is HA over multi AZs in same region.
-* Lambda Workers are bare metal Amazon EC2 Nitro instances which are launched and managed by Lambda in a separate isolated AWS account which is not visible to customers. Each worker has one to many [Firecraker microVMs](https://aws.amazon.com/blogs/aws/firecracker-lightweight-virtualization-for-serverless-computing/). There is no container engine. Container image is just for packaging the lambda code as zip does.
+
+![](./diagrams/ctrl_data_planes.drawio.png)
+
+* Lambda Workers are bare metal Amazon EC2 Nitro instances which are launched and managed by Lambda in a separate isolated AWS account which is not visible to customers. Each worker has one to many [Firecraker microVMs](https://aws.amazon.com/blogs/aws/firecracker-lightweight-virtualization-for-serverless-computing/). There is no container engine. Container image is just for packaging the lambda code as zip does. The following diagram presents the high level components, that are slightly different if the communication with the client is synchronous or asynchronous:
 
     ![](./diagrams/lambda-arch.drawio.png){width=1000}
 
+    The **event source mapping** is a Lambda components that reads from an event source and invokes a Lambda function (see details below).
+
     * **Synchronous calls** are used for immediate function response, with potential errors returned to the caller. It may return throttles when the number of requests hits the concurrency limit.
-    * **Asynchronous calls** return an acknowledgement message. Event payloads are always queued for processing before invocation. Internal SQS queue persists messages for up to 6 hours. Queued events are retrieved in batches by Lambda’s poller fleet. The poller fleet is a group of Amazon EC2 instances whose purpose is to process queued event invocations which have not yet been processed. When an event fails all processing attempts, it is discarded by Lambda. The dead letter queue (DLQ) feature allows sending unprocessed events from asynchronous invocations to an Amazon SQS queue or an Amazon SNS topic defined by the customer. Asynchronous processing should be more scalable.
-    * **Event source** mapping is used to pull messages from different streaming sources and then synchronously calls the Lambda function. It reads using batching and send all the events as argument to the function. If the function returns an error for any of the messages in a batch, Lambda retries the whole batch of messages until processing succeeds or the messages expire. It supports error handling. 
-    * If the service is not available. Callers may queue the payload on client-side to retry. If the invoke service receives the payload, the service attempts to identify an available execution environment for the request and passes the payload to that execution environment to complete the invocation. It may lead to create this execution environment.
 
-    ![](./images/req-rep-lambda.png){ width=800 }
+    ???+ info "A synchronous flow to Lambda explained"
+        Below is a diagram representing an external client application invoking a Lambda function asynchronously. The requests reach one of th front end load balancer, which route the request to a Frontend lambda invoke service. As a multi-AZ service, for high availability, there is no concern of load balancing across AZs. 
 
+        ![](./diagrams/req-resp-lambda.drawio.png){ width=900 }
 
-* There is one runtime that matches the programming language (Java, Node.js, C#, Go, or Python. ).
-* To reuse code in more than one function, consider creating a Layer and deploying it. A layer is a ZIP archive that contains libraries, a custom runtime, or other dependencies. [See layer management in product documentation]()
-* Lambda supports versioning and developer can maintain one or more versions of the lambda function. We can reduce the risk of deploying a new version by configuring the alias to send most of the traffic to the existing version, and only a small percentage of traffic to the new version. Below  is an example of creating one Alias to version 1 and a routing config with Weight at 30% to version 2. Alias enables promoting new lambda function version to production and if we need to rollback a function, we can simply update the alias to point to the desired version. Event source needs to use Alias ARN for invoking the lambda function.
+        The frontend invoke svc performs authentication and authorization of the request to ensure only authorized apps can access the function. It also calls the Counting svc, to assess quota limits based on reserver concurrency, burst, counts... The **Assignment svc**, is used as stateful service, to find a **worker** to assign to the Lambda function to invoke (it also defines CPU, memory needs for the fct). The control plane svc manages, the fct creation, the life cycle of the assigned service nodes. The Assignment svc is a coordinator, information retriever, and distributor about what state execution environments are on the worker host and where invokes should go. It keeps frontend svc up to date about fct execution. For first invocation it also communicates with the **Placement svc** to get new runtime environment needs to be started on a worker host with a time-based lease. It uses Optimization to maximize packing density for better fleet utilization and minimize cold start latency. Placement svc monitor worker health. Once the environment is up and running, the Assignment svc gets the supplied IAM role for the lambda function security privileges defined and distributed to the worker host, along with the environment variables. Once done the Frontend svc can do the invoke of the lambda fct handler. When the response is sent back to the client, th worker signals back to the Assignment svc the invoke is done, so it can receive new warm invocations.
 
-    ```sh
-    aws lambda create-alias --name routing-alias --function-name my-function --function-version 1  --routing-config AdditionalVersionWeights={"2"=0.03}
-    ```
+    * **Asynchronous call** goes to an "event invoke" frontend, that returns an acknowledgement message. Event payloads are always queued for processing before invocation. Asynchronous processing should be more scalable.
+
+    ???+ info "Asynchronous flow to Lambda details"
+        The Load balancers knows it is an asynchronous or event invoke so it routed to an "event invoke" frontend svc. The request message or event is enqueued to SQS queue. There are multiple autoscaling SQS queues, and they are hidden to the lambda developer. 
+
+        ![](./diagrams/async-lambda-flow.drawio.png) 
+
+        Internal SQS queue persists messages for up to 6 hours. Queued events are retrieved in batches by Lambda’s poller instances, which also delete messages from the queue. The poller fleet is a group of Amazon EC2 instances whose purpose is to process queued event invocations which have not yet been processed. The poller propagates the invoke using the synchronous "frontend invoke svc". Once the invoke to the handler succeed, the poller gets the response and can delete the message from the queue. When the message fails all processing attempts, it will follow the same visibility timeout as in SQS, the message is discarded by Lambda. The dead letter queue (DLQ) feature allows sending unprocessed events from asynchronous invocations to an Amazon SQS queue or an Amazon SNS topic defined by the customer. The **Queue manager svc** manages queues, monitors them for any backups. It interacts with the **Leasing svc** which manages which pollers are processing with which queues. The Leasing svc also manages and monitors pollers.
+
+    * **Event source mapping** is used to poll messages from different streaming sources and then synchronously calls the Lambda function. It reads using batching and send all the events as argument to the function. If the function returns an error for any of the messages in a batch, Lambda retries the whole batch of messages until processing succeeds or the messages expire. It supports error handling. It is based on the same architecture as the asynchronous invoke frontend and poller fleet, except the code of the poller is specific to the event source. 
     
-* Each lambda function has a unique ARN.
-* Deployment package is a zip or container image.
+        ![](./diagrams/evt-mapping-lambda-flow.drawio.png){width=800}
+
+        As a managed service within Lambda the poller fleet is serverless too.
+
+    * If the Lambda service is not available. Callers may queue their payload on the client-side for retry.
+
 
 ### Event sourcing
 
@@ -130,8 +154,8 @@ There are a set of physical constraints the Lambda application needs to support:
 
 * When migrating existing application [review the different design patterns to consider](/#designing-for-serverless).
 * Think about co-existence with existing application and how API Gateway can be integrated to direct traffic to new components (Lambda functions) without disrupting existing systems. With API Gateway developer can export the SDK for the business APIs to make integration easier for other clients, and can use throttling and usage plans to control how different clients can use the API.
-* Do cost comparison analysis. For example API Gateway is pay by the requests, while ALB is priced by hours based on the load balance capacity units used per hour. Lambda is also per request based.
-* Assess when to use ECS Fargate when the application is in container, and may run for a long time period. Larger packaging may not be possible to run on Lambda. Applications that use non HTTP end point, integrate to messaging middleware with Java based APIs are better fit for ECS Fargate deployment.
+* Do cost comparison analysis. For example API Gateway is pay by the requests, while ALB is priced by hours based on the load balance capacity units used per hour. Lambda is also pay per request based.
+* Assess when to use ECS Fargate when the application is in container, and may run for a long time period. Larger packaging may not be possible to run on Lambda, while may run easily on ECS. Applications that use non HTTP end point, integrate to messaging middleware with Java based APIs (Kafka, AMQP,...) are better fit for ECS Fargate deployment.
 
 ### Designing for Lambda
 
@@ -205,7 +229,7 @@ def handler(message: dict, context: LambdaContext) -> dict:
 
 Amazon API Gateway gets permission to invoke the function from the function's resource-based policy with the principal being the `apigateway.amazonaws.com`. 
 
-[See getting started tutorial](https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway-tutorial.html)
+[See APIGateway getting started tutorial](https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway-tutorial.html) and [API Gateway workshop.](https://catalog.us-east-1.prod.workshops.aws/workshops/2c8321cb-812c-45a9-927d-206eea3a500f/en-US)
 
 ### Function URLs
 

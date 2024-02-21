@@ -37,6 +37,8 @@ def handler(message: dict, context: LambdaContext) -> dict:
     return app.resolve(message, context)
 ```
 
+* To reuse code in more than one function, consider creating a Layer and deploying it. A layer is a ZIP archive that contains libraries, a custom runtime, or other dependencies. [See layer management in product documentation]()
+
 ### Unit testing
 
 The unittest can be done using mock library to bypass remote calls. Tests may be defined using pytest library and commands.
@@ -71,6 +73,8 @@ See the full code in [test_acr_mgr.py](https://github.com/jbcodeforce/autonomous
 
 ### Deployment
 
+Package the code as ZIP file (250MB limit) or container image (with 10GB limit).
+
 Lambda can use Layer to simplify code management and reuse. The Powertools library for example can be used as a layer.
 
 ```python
@@ -102,7 +106,30 @@ cdk deploy
 
 which creates a CloudFormation template.
 
-#### SAM
+#### [AWS SAM - Serverless Application Model](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html)
+
+AWS SAM is an extension of AWS CloudFormation with a simpler syntax for configuring common serverless application resources such as functions, triggers, databases and APIs. It offers the following benefits:
+
+* Define the application infrastructure as code quickly, using less code.
+* Manage the serverless applications through their entire development lifecycle.
+* Quickly provision permissions between resources with AWS SAM connectors.
+* Continuously sync local changes to the cloud as we develop.
+* On top of CloudFormation or Terraform.
+
+
+SAM includes two parts:
+
+1. SAM template specification: It is an extension on top of AWS CloudFormation.
+1. A CLI to create new project, build and deploy, perform local debugging and testing, configure pipeline.
+
+During deployment, SAM transforms and expands the SAM syntax into AWS CloudFormation syntax.
+
+See [SAM templates here](https://github.com/aws/aws-sam-cli-app-templates)
+
+
+See the [Getting started tutorial.](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-getting-started-hello-world.html)
+
+and the [creating your first API from scratch with OpenAPI and AWS SAM](https://catalog.us-east-1.prod.workshops.aws/workshops/4ff2d034-dee1-4570-93d9-11a54cc5d60c/en-US).
 
 ### Integration tests
 
@@ -166,6 +193,12 @@ While messages go to dead letter queues to handle errors and monitor messages se
 We recommend to follow [this workshop - Building CI/CD pipelines for Lambda canary deployments using AWS CDK](https://catalog.us-east-1.prod.workshops.aws/workshops/5195ab7c-5ded-4ee2-a1c5-775300717f42/en-US).
 
 ## Version management - Rollback
+
+Lambda supports versioning and developer can maintain one or more versions of the lambda function. We can reduce the risk of deploying a new version by configuring the alias to send most of the traffic to the existing version, and only a small percentage of traffic to the new version. Below  is an example of creating one Alias to version 1 and a routing config with Weight at 30% to version 2. Alias enables promoting new lambda function version to production and if we need to rollback a function, we can simply update the alias to point to the desired version. Event source needs to use Alias ARN for invoking the lambda function.
+
+    ```sh
+    aws lambda create-alias --name routing-alias --function-name my-function --function-version 1  --routing-config AdditionalVersionWeights={"2"=0.03}
+    ```
 
 * Blue/green
 * Version

@@ -11,9 +11,9 @@ A simple application to manage an inventory of Autonomous Robot Cars. This is to
 * [x] How to use event sourcing with Lambda? 
 * [ ] How to handle state management in a stateless environment like AWS Lambda, especially for complex workflows or transactions?
 * [x] What are the best practices for integrating AWS Lambda with other AWS services, particularly for event-driven architectures?
-* [ ] How to design Lambda functions to handle events from multiple sources, and what considerations are there for managing event source mappings?
+* [x] How to design Lambda functions to handle events from multiple sources, and what considerations are there for managing event source mappings?
 * [x] How do AWS Lambda's service limits impact architectural decisions, and what strategies can be used to mitigate potential limitations? [Answer>>>](./architecture.md/#service-limit-or-quotas)
-* [ ] Are there specific scenarios where AWS Lambda might not be the best choice, and what alternatives to consider?
+* [x] Are there specific scenarios where AWS Lambda might not be the best choice, and what alternatives to consider?
 * [x] How to integrate API Gateway with Lambda functions to scale demand? 
 * [ ] How to use AWS Step Functions to orchestrate multiple Lambda functions for complex workflows?
 * [ ] What are the best practices for using event source mappings with Lambda to process records from streams or queues?
@@ -23,9 +23,9 @@ A simple application to manage an inventory of Autonomous Robot Cars. This is to
 ### Scaling
 
 * [ ] How to scale lambda for high-traffic applications and how to monitor scaling?
-* [ ] How to optimize Lambda function for performance?
+* [x] How to optimize Lambda function for performance?
 * [x] Review strategy to minimize cold start?
-* [ ] Optimizing for high-throughput?
+* [x] Optimizing for high-throughput?
 * [x] How does the allocated memory size affect the execution time and cost of Lambda functions?
 * [x] How to balance performance / cost?
 
