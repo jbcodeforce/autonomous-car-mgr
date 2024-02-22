@@ -36,9 +36,9 @@ This repository includes a set of best practices around developing a solution us
 
 ### Security
 
-* [X] What are the best practices to secure Lambda functions, especially in terms of managing permissions and access controls?
+* [X] What are the best practices to secure Lambda functions, especially in terms of managing permissions and access controls? [A >>>](./security.md
 * [X] How should sensitive data be managed within Lambda environments?
-* [X] How to manage secrets?
+* [X] How to manage secrets? [A >>>](./security.md/#secrets-in-aws-secrets)
 * [X] How to manage IAM roles and permissions for Lambda functions to ensure principle of least privilege?
 * [X] How to support encrypting sensitive data processed by Lambda functions, both in transit and at rest?
 

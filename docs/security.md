@@ -64,6 +64,15 @@ And generates the following policy:
 
 See [other examples](https://docs.aws.amazon.com/lambda/latest/dg/lambda-api-permissions-ref.html) from product documentation.
 
+If developer needs to be more restrictive, it is possible to define custom policy and attach to a role used by the Lambda function. CDK, CloudFormation or SAM offer such constructs.
+
+```python
+sm_role.add_managed_policy(iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole"))
+sm_role.add_managed_policy(iam.ManagedPolicy.from_aws_managed_policy_name("AWSXRayDaemonWriteAccess"))
+sm_role.add_managed_policy(iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaVPCAccessExecutionRole"))
+     
+```
+
 ## SecOps considerations
 
 As a DevOps consider the followings:

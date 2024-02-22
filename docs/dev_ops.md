@@ -110,7 +110,24 @@ def handler(message: dict, context: LambdaContext) -> dict:
     return app.resolve(message, context)
 ```
 
-To reuse code in more than one function, consider creating a Layer and deploying it. A layer is a ZIP archive that contains libraries, a custom runtime, or other dependencies. [See lambda layer management in product documentation]()
+### Layers for reuse
+
+To reuse code in more than one function, consider creating a Layer and deploying it. A layer is a ZIP archive that contains libraries, a custom runtime, or other dependencies. [See lambda layer management in product documentation](https://docs.aws.amazon.com/lambda/latest/dg/chapter-layers.html).
+
+One of the advantage is to see the function code in the Lambda console.
+
+When you add a layer to a function, Lambda loads the layer content into the /opt directory of that execution environment. 
+
+Example of packaging python dependencies as zip, and create a Lambda Layer to be reused. 
+
+```sh
+pip3 install --target ../package/python -r requirements.txt
+```
+
+### Deeper dive
+
+* [Getting started with Powertools]()
+* [How to use layer to manage common dependencies in Lambda.](https://docs.aws.amazon.com/lambda/latest/dg/chapter-layers.html#lambda-layers-overview)
 
 ### Unit testing
 
