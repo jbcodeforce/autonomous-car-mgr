@@ -15,6 +15,7 @@ from aws_cdk import (
      aws_logs,
     aws_iam,
     aws_secretsmanager,
+    aws_codedeploy
 )
 from datetime import datetime
 import json
@@ -40,7 +41,7 @@ class ACMmainStack(Stack):
                 )
         acm_lambda, alias= self.defineAutonomousCarManagerAsLambdaFct(carTable,carEventBus,env)
         self.defineAutonomousCarManagerAPIs(alias)
-
+        self.code_deploy_app(alias)
         carEventBus.grant_all_put_events(acm_lambda)
         self.defineSNSTargetToEventBus(carEventBus)
         self.defineCWlogsAsTargetToEventBus(carEventBus)
@@ -95,11 +96,11 @@ class ACMmainStack(Stack):
                                              bundling=BundlingOptions(
                                                  image= aws_lambda.Runtime.PYTHON_3_11.bundling_image,
                                                  command= [
-                                                     'bash','-c','pip install -r requirements.txt -t /asset-output && cp -rau . /asset-output'
+                                                     'bash','-c','pip3 install -r requirements.txt  --python-version 3.11 --only-binary=:all: -t /asset-output && cp -rau . /asset-output'
                                                  ],
                                             )),
             function_name= "CarMgrService",
-            handler='carmgr.app.handler',
+            handler='app.handler',
             role=lambda_role,
             layers=[powertools_layer],
             environment = {
@@ -206,3 +207,14 @@ class ACMmainStack(Stack):
                                     generate_string_key="password",
                                     exclude_characters="/@"
                                 ))
+    
+    def code_deploy_app(self,fctAlias):
+        application=  aws_codedeploy.LambdaApplication(self, "AcmCodeDeploy",
+            application_name="AcmMicroservice"
+        )
+        deployment_group = aws_codedeploy.LambdaDeploymentGroup(self, "AcmBlueGreenDeployment",
+            application=application,  # optional property: one will be created for you if not provided
+            alias=fctAlias,
+            deployment_config=aws_codedeploy.LambdaDeploymentConfig.LINEAR_10_PERCENT_EVERY_1_MINUTE
+        )
+        return application

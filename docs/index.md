@@ -1,12 +1,15 @@
-# Autonomous Car Manager Service
+# Lambda studies
 
-A simple application to manage an inventory of Autonomous Robot Cars. This is to demonstrate some of the microservice implementation in Lambda with functional and stress testing.
+???- Info "Version"
+    Created 01/2024. Update 02/2024
+
+This repository includes a set of best practices around developing a solution using Lambda and Amazon serverless services. To demonstrate some of the concepts with code, the repository also includes a simple microservice to manage an inventory of Autonomous Robot Cars.
 
 ## Questions this repository try to answer
 
 ### Architecture Patterns
 
-* [x] Review Lambda runtime architecture
+* [x] Review Lambda runtime architecture (internal view). [See this section >>> ](./architecture.md/#lambda-run-time-architecture)
 * [x] Serverless architecture patterns: how to map to a microservice approach ? what are the best practices for using Lambda functions to ensure loose coupling and service autonomy?
 * [x] How to use event sourcing with Lambda? 
 * [ ] How to handle state management in a stateless environment like AWS Lambda, especially for complex workflows or transactions?
@@ -64,13 +67,17 @@ A simple application to manage an inventory of Autonomous Robot Cars. This is to
 
 [>>> See discussions in development and operations section](./dev_ops.md)
 
-## A benchmark application
+## A demonstration application
 
-To support the discussions addressed in this repository, I will use a simple application using API Gateway, Lambda, DynamoDB and add some logging and monitoring features on top of it.
+To support the discussions addressed in this repository, I will start by a simple application using API Gateway, Lambda, DynamoDB and add some logging and monitoring features on top of it.
 
 The application starts with the simplest deployment as illustrated in the following diagrams:
 
 ![](./diagrams/acm-base.drawio.png)
+
+To be more event-driven microservice, I add event-bridge as middleware to produce messages to.
+
+![](https://jbcodeforce.github.io/yarfba/serverless/diagrams/event-b-solution.drawio.png)
 
 ### Features to consider
 

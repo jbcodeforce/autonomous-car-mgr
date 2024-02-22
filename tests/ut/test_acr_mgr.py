@@ -6,7 +6,7 @@ from moto import mock_aws
 import json
 from pathlib import Path
 from typing import Any
-import carmgr.app as app
+import app as app
 from unittest import mock
 
 

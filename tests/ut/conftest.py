@@ -3,7 +3,7 @@ import pytest
 import json
 from pathlib import Path
 from typing import Any
-import carmgr.app as app
+import app as app
 import boto3
 import moto
 from moto import mock_aws
@@ -52,5 +52,5 @@ def event_client(aws_credentials):
 @pytest.fixture(scope="module")
 def secret_client(aws_credentials):
     with mock_aws():
-        conn = boto3.client("eventsmanager", region_name="us-west-2")
+        conn = boto3.client("secretsmanager", region_name="us-west-2")
         yield conn

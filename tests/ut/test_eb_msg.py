@@ -2,7 +2,7 @@ import boto3,json
 from unittest import mock
 from unittest.mock import patch
 
-import carmgr.app as app
+import app as app
 
 eventbridge_client = mock.Mock()
 eventbridge_client.put_events.return_value = {

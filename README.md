@@ -3,7 +3,7 @@
 
 A simple application to manage an inventory of Autonomous Robot Cars. This is to demonstrate some of the microservice implementation with Amazon Lambda with functional and stress testing.
 
-[Read documentation in book format](https://jbcodeforce.github.io/autonomous-car-mgr/) for detail on Lambda implementation and deployment best practices.
+[Read Lambda studies documentation included in this repository using a book format](https://jbcodeforce.github.io/autonomous-car-mgr/) for detail on Lambda implementation and deployment best practices.
 
 ## Requirements
 

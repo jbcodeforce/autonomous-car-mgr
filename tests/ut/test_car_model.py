@@ -1,5 +1,5 @@
 
-from carmgr.acm_model import AutonomousCar, AutonomousCarEvent
+from acm_model import AutonomousCar, AutonomousCarEvent
 import json 
 from pydantic.json import pydantic_encoder
 

@@ -1,19 +1,92 @@
 # DevOps
 
-As solution deployed on AWS, and integrating with AWS services, developers need to study the [SDK (e.g. Python boto3 module)](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html). 
+This section addresses development practices and operations for Lambda application. 
 
-## Tools to support code deployment
+As solution deployed on AWS, and integrating with AWS services, developers need to study the [SDK (e.g. Python boto3 module)](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html).
 
-The core element of the infrastructure as code (IaC) on AWS is [AWS CloudFormation](https://aws.amazon.com/cloudformation). If developers or devops engineers prefer to use programming language to define service configuration and code deployment the [AWS Cloud Development Kit](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html) is a powerful solution. It uses code which can be integrated in the same Git repository as application / microservice code. 
+There are a lot of source of information, starting by [aws.amazon.com/devops/](https://aws.amazon.com/devops/).
 
-For serverless implementation, [AWS Serverless Application Model (SAM)](https://aws.amazon.com/serverless/sam/) is a declarative way to define IaC, by using higher level template than CloudFormation.
+## Development tooling
+
+There is no need to be prescriptive in this domain as each developer has his/he own habit. However as the solution will run on AWS cloud there are a lot of nice tools and open source content developers should consider.
+
+The core element of the infrastructure as code (IaC) on AWS is [AWS CloudFormation](https://aws.amazon.com/cloudformation). If developers or DevOps engineers prefer to use programming language to define service configuration and code deployment the [AWS Cloud Development Kit](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html) is a powerful solution. It uses code which can be integrated in the same Git repository as application / microservice code.
+
+Below is an example of repository structure, with separate folder for IaC code (here based on AWS CDK), integration test (`e2`), src and unit tests folders.
+
+```sh
+autonomous_car_mgr
+├── IaC
+│   ├── README.md
+│   ├── acm
+│   │   ├── __init__.py
+│   │   └── main_stack.py
+│   ├── app.py
+│   ├── cdk.json
+│   ├── requirements-dev.txt
+│   ├── requirements.txt
+│   ├── source.bat
+│   └── tests
+├── e2e
+│   ├── CreateCarRecords.py
+│   ├── CreateNewCarViaAPI.py
+│   ├── GetCarById.py
+├── src
+│   ├── carmgr
+│   │   ├── __init__.py
+│   │   ├── acm_model.py
+│   │   └── app.py
+│   └── requirements.txt
+└── tests
+    ├── requirements-dev.txt
+    └── ut
+```
+
+### CDK
 
 CDK uses an imperative programming style which can make complex logic and conditionals easier to implement compared to the declarative style of AWS SAM templates.
+
+See an example of CDK application to deploy API Gateway, Lambda function implementing a simple microservice, and DynamoDB table [here.](https://github.com/jbcodeforce/autonomous-car-mgr/blob/main/cdk/acm/main_stack.py). 
+
+See [AWS CDK Python Reference](https://docs.aws.amazon.com/cdk/api/v2/python/) to get examples and API description to create anything in AWS.
+
+As a pre-requisite developers need to bootstrap CDK in the target deployment region using `cdk bootstrap`. Then any code or IaC change can be deployed using:
+
+```sh
+cdk deploy
+```
+
+which creates a CloudFormation template.
+
+### [AWS SAM - Serverless Application Model](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html)
+
+AWS SAM is an extension of AWS CloudFormation with a simpler syntax for configuring common serverless application resources such as functions, triggers, databases and APIs. It offers the following benefits:
+
+* Define the application infrastructure as code quickly, using less code.
+* Manage the serverless applications through their entire development lifecycle.
+* Quickly provision permissions between resources with AWS SAM connectors.
+* SAM CLI provides a Lambda-like execution environment that lets you locally build, test, and debug applications defined by SAM templates or through the AWS Cloud Development Kit (CDK).
+* Continuously sync local changes to the cloud as we develop.
+* On top of CloudFormation or Terraform.
+
+
+SAM includes two parts:
+
+1. SAM template specification: It is an extension on top of AWS CloudFormation.
+1. A CLI to create new project, build and deploy, perform local debugging and testing, configure pipeline.
+
+During deployment, SAM transforms and expands the SAM syntax into AWS CloudFormation syntax.
+
+See [SAM templates here](https://github.com/aws/aws-sam-cli-app-templates)
+
+
+* See the [Getting started tutorial.](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-getting-started-hello-world.html)
+* [A Complete SAM Workshop.](https://catalog.workshops.aws/complete-aws-sam/en-US)
+and the [creating your first API from scratch with OpenAPI and AWS SAM](https://catalog.us-east-1.prod.workshops.aws/workshops/4ff2d034-dee1-4570-93d9-11a54cc5d60c/en-US).
 
 SAM CLI supports local development and testing of Lambda apps, CDK provides a full-featured local development environment with watch mode.
 
 Developer can use the AWS SAM CLI to locally test and build serverless applications defined using the AWS Cloud Development Kit (AWS CDK). [See Getting started with AWS SAM and the AWS CDK.](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-cdk-getting-started.html).
-
 
 ## Code boilerplate
 
@@ -37,7 +110,7 @@ def handler(message: dict, context: LambdaContext) -> dict:
     return app.resolve(message, context)
 ```
 
-* To reuse code in more than one function, consider creating a Layer and deploying it. A layer is a ZIP archive that contains libraries, a custom runtime, or other dependencies. [See layer management in product documentation]()
+To reuse code in more than one function, consider creating a Layer and deploying it. A layer is a ZIP archive that contains libraries, a custom runtime, or other dependencies. [See lambda layer management in product documentation]()
 
 ### Unit testing
 
@@ -90,46 +163,19 @@ powertools_layer = aws_lambda.LayerVersion.from_layer_version_arn(
     layers=[powertools_layer],
 ```
 
-But local dependencies can also being deployed as a zip (See [the product documentation- Working with .zip file archives for Python](https://docs.aws.amazon.com/lambda/latest/dg/python-package.html#python-package-create-dependencies)).
+But local dependencies can also being deployed as a zip (See [the product documentation- Working with .zip file archives for Python](https://docs.aws.amazon.com/lambda/latest/dg/python-package.html#python-package-create-dependencies)) for the explanations on how to do it. With CDK it is possible to use the concept of [bundling options](https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk/BundlingOptions.html#bundlingoptions):
 
-#### CDK
-
-See an example of CDK application to deploy API Gateway, Lambda function implementing a simple microservice, and DynamoDB table [here.](https://github.com/jbcodeforce/autonomous-car-mgr/blob/main/cdk/acm/main_stack.py). 
-
-See [AWS CDK Python Reference](https://docs.aws.amazon.com/cdk/api/v2/python/) to get examples and API description to create anything in AWS.
-
-As a pre-requisite developers need to bootstrap CDK in the target deployment region using `cdk bootstrap`. Then any code or IaC change can be deployed using:
-
-```sh
-cdk deploy
+```python
+ code= aws_lambda.Code.from_asset(path="../src/",
+        bundling=BundlingOptions(
+            image= aws_lambda.Runtime.PYTHON_3_11.bundling_image,
+            command= [
+                'bash','-c','pip install -r requirements.txt -t /asset-output && cp -rau . /asset-output'
+            ],
+    )),
 ```
 
-which creates a CloudFormation template.
-
-#### [AWS SAM - Serverless Application Model](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html)
-
-AWS SAM is an extension of AWS CloudFormation with a simpler syntax for configuring common serverless application resources such as functions, triggers, databases and APIs. It offers the following benefits:
-
-* Define the application infrastructure as code quickly, using less code.
-* Manage the serverless applications through their entire development lifecycle.
-* Quickly provision permissions between resources with AWS SAM connectors.
-* Continuously sync local changes to the cloud as we develop.
-* On top of CloudFormation or Terraform.
-
-
-SAM includes two parts:
-
-1. SAM template specification: It is an extension on top of AWS CloudFormation.
-1. A CLI to create new project, build and deploy, perform local debugging and testing, configure pipeline.
-
-During deployment, SAM transforms and expands the SAM syntax into AWS CloudFormation syntax.
-
-See [SAM templates here](https://github.com/aws/aws-sam-cli-app-templates)
-
-
-See the [Getting started tutorial.](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-getting-started-hello-world.html)
-
-and the [creating your first API from scratch with OpenAPI and AWS SAM](https://catalog.us-east-1.prod.workshops.aws/workshops/4ff2d034-dee1-4570-93d9-11a54cc5d60c/en-US).
+In case of import error on Lambda execution, ask Amazon Q and [re:Post](https://repost.aws/knowledge-center/lambda-import-module-error-python), some library bundled on Mac will not work on other Lambda runtime.
 
 ### Integration tests
 
@@ -174,7 +220,7 @@ There are different ways to support error handling, depending of the integration
 
 ### CloudWatch monitoring
 
-[Lambda monitoring](https://docs.aws.amazon.com/lambda/latest/dg/monitoring-functions-access-metrics.html) is supported by Amazon CloudWatch, with logs and metrics such as invocation count, duration, and errors. Within CloudWatch, devops can set alarms on certain metrics that may breach, to create notifications to the team.
+[Lambda monitoring](https://docs.aws.amazon.com/lambda/latest/dg/monitoring-functions-access-metrics.html) is supported by Amazon CloudWatch, with logs and metrics such as invocation count, duration, and errors. Within CloudWatch, DevOps team may set alarms on certain metrics that may breach, to create notifications to the team.
 
 Logs need to be added to the Function code. (print() in Python goes to the log). Use boilerplate code like AWS Powertools to control the logging level, participate in Xray reporting to view detailed traces of requests across your application and Lambda functions. This helps pinpoint where latency is occurring.
 
@@ -190,17 +236,47 @@ While messages go to dead letter queues to handle errors and monitor messages se
 
 ## CI/CD pipeline
 
-We recommend to follow [this workshop - Building CI/CD pipelines for Lambda canary deployments using AWS CDK](https://catalog.us-east-1.prod.workshops.aws/workshops/5195ab7c-5ded-4ee2-a1c5-775300717f42/en-US).
+We recommend to follow [this workshop - Building CI/CD pipelines for Lambda canary deployments using AWS CDK](https://catalog.us-east-1.prod.workshops.aws/workshops/5195ab7c-5ded-4ee2-a1c5-775300717f42/en-US) as a good source on how to do blue/green deployment.
+
+The autonomous car manager service use the concepts of this workshop, like alias, function versioning, CodeDeploy application.
 
 ## Version management - Rollback
 
-Lambda supports versioning and developer can maintain one or more versions of the lambda function. We can reduce the risk of deploying a new version by configuring the alias to send most of the traffic to the existing version, and only a small percentage of traffic to the new version. Below  is an example of creating one Alias to version 1 and a routing config with Weight at 30% to version 2. Alias enables promoting new lambda function version to production and if we need to rollback a function, we can simply update the alias to point to the desired version. Event source needs to use Alias ARN for invoking the lambda function.
+Lambda supports versioning and developer can maintain one or more versions of the lambda function. We can reduce the risk of deploying a new version by configuring the `alias` to send most of the traffic to the existing version, and only a small percentage of traffic to the new version. Below  is an example of creating one Alias to version 1 and a routing config with Weight at 30% to version 2. Alias enables promoting new lambda function version to production and if we need to rollback a function, we can simply update the alias to point to the desired version. Event source needs to use Alias ARN for invoking the lambda function.
 
-    ```sh
-    aws lambda create-alias --name routing-alias --function-name my-function --function-version 1  --routing-config AdditionalVersionWeights={"2"=0.03}
-    ```
+```sh
+aws lambda create-alias --name routing-alias --function-name my-function --function-version 1  --routing-config AdditionalVersionWeights={"2"=0.03}
+```
 
-* Blue/green
-* Version
-* Traffic routing
-* Rollback
+## Blue/Green
+
+## Canary deployment
+
+Canary deployment works similarly to blue-green deployment but use a small set of servers before finishing the others. With Lambda to achieve canary deployments we need to use [AWS CodeDeploy](https://us-west-2.console.aws.amazon.com/codesuite/codedeploy/start?region=us-west-2).
+
+CodeDeploy application is the Lambda version. To enable traffic shifting deployments for Lambda functions, CodeDeploy uses Lambda Aliases, which can balance incoming traffic between two different versions of your function. When you publish a new version of the function to your stack, CodeDeploy will send a small percentage of traffic to the new version, monitor, and validate before shifting 100% of traffic to the new version.
+
+Below is an example of creating a CodeDeploy application and deployment group to use the last created alias version:
+
+```python
+def code_deploy_app(self,fctAlias):
+        application=  aws_codedeploy.LambdaApplication(self, "AcmCodeDeploy",
+            application_name="AcmMicroservice"
+        )
+        deployment_group = aws_codedeploy.LambdaDeploymentGroup(self, "AcmBlueGreenDeployment",
+            application=application,  # optional property: one will be created for you if not provided
+            alias=fctAlias,
+            deployment_config=aws_codedeploy.LambdaDeploymentConfig.LINEAR_10_PERCENT_EVERY_1_MINUTE
+        )
+        return application
+```
+
+When the CloudFormation has created the CodeDeploy application, we can see the deployment of the Lambda occuring
+
+![](./images/cd_deploy_hist.png)
+
+And Lambda having 2 versions with different traffic ratio:
+
+![](./images/lbd_version.png)
+
+
