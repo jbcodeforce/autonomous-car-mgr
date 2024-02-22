@@ -112,7 +112,9 @@ def handler(message: dict, context: LambdaContext) -> dict:
 
 ### Layers for reuse
 
-To reuse code in more than one function, consider creating a Layer and deploying it. A layer is a ZIP archive that contains libraries, a custom runtime, or other dependencies. [See lambda layer management in product documentation](https://docs.aws.amazon.com/lambda/latest/dg/chapter-layers.html).
+Layers are packages of libraries or other dependencies that can be used by multiple functions.
+
+A layer is a ZIP archive that contains libraries, a custom runtime, or other dependencies. [See lambda layer management in product documentation](https://docs.aws.amazon.com/lambda/latest/dg/chapter-layers.html).
 
 One of the advantage is to see the function code in the Lambda console.
 
@@ -121,7 +123,16 @@ When you add a layer to a function, Lambda loads the layer content into the /opt
 Example of packaging python dependencies as zip, and create a Lambda Layer to be reused. 
 
 ```sh
-pip3 install --target ../package/python -r requirements.txt
+pip3 install --target ./package -r requirements.txt
+cd package
+zip -r ../pck.zip .
+# use CLI for example 
+aws lambda publish-layer-version --layer-name common-python3 \
+    --description "A layer for some python lambda" \
+    --license-info "MIT" \
+    --zip-file fileb://pck.zip \
+    --compatible-runtimes python3.10 python3.11 \
+    --compatible-architectures "arm64" "x86_64"
 ```
 
 ### Deeper dive
@@ -257,7 +268,7 @@ We recommend to follow [this workshop - Building CI/CD pipelines for Lambda cana
 
 The autonomous car manager service use the concepts of this workshop, like alias, function versioning, CodeDeploy application.
 
-## Version management - Rollback
+### Version management - Rollback
 
 Lambda supports versioning and developer can maintain one or more versions of the lambda function. We can reduce the risk of deploying a new version by configuring the `alias` to send most of the traffic to the existing version, and only a small percentage of traffic to the new version. Below  is an example of creating one Alias to version 1 and a routing config with Weight at 30% to version 2. Alias enables promoting new lambda function version to production and if we need to rollback a function, we can simply update the alias to point to the desired version. Event source needs to use Alias ARN for invoking the lambda function.
 
@@ -265,9 +276,9 @@ Lambda supports versioning and developer can maintain one or more versions of th
 aws lambda create-alias --name routing-alias --function-name my-function --function-version 1  --routing-config AdditionalVersionWeights={"2"=0.03}
 ```
 
-## Blue/Green
+### Blue/Green
 
-## Canary deployment
+### Canary deployment
 
 Canary deployment works similarly to blue-green deployment but use a small set of servers before finishing the others. With Lambda to achieve canary deployments we need to use [AWS CodeDeploy](https://us-west-2.console.aws.amazon.com/codesuite/codedeploy/start?region=us-west-2).
 
@@ -288,7 +299,7 @@ def code_deploy_app(self,fctAlias):
         return application
 ```
 
-When the CloudFormation has created the CodeDeploy application, we can see the deployment of the Lambda occuring
+When the CloudFormation has created the CodeDeploy application, we can see the deployment of the Lambda occurring
 
 ![](./images/cd_deploy_hist.png)
 
@@ -297,3 +308,60 @@ And Lambda having 2 versions with different traffic ratio:
 ![](./images/lbd_version.png)
 
 
+## Other tools
+
+### Cloud9
+
+[Cloud9 IDE](https://docs.aws.amazon.com/cloud9/latest/user-guide/ide.html) is a nice solution to get a vscode compatible IDE on linux, so Lambda code can be compatible with runtime.
+
+Some quick installation updates
+
+* update python, under environment
+
+```sh
+python3 --version
+>> 
+wget https://www.python.org/ftp/python/3.11.8/Python-3.11.8.tgz               
+tar xzf Python-3.11.8.tgz 
+
+sudo ./configure --enable-optimizations 
+sudo make altinstall 
+# The Python binary will be available under the /usr/local/bin directory.
+python3.11 --version
+```
+
+To work on the autonomous-car-mgr, git clone the repository. 
+
+Then for:
+
+* Start a Python virtual env
+
+    ```sh
+    python3.11 -m venv .devenv
+    source .devenv/bin/activate
+    ```
+
+* Package with the Python libraries dependencies for Linux
+
+    ```sh
+    # Under src
+    pip install  -r requirements.txt -t package
+    cd package
+    zip -r ../package.zip .
+    cd .. && rm -r package
+    ```
+
+* CDK deployment, be sure to install cdk in a Python 11 virtual env:
+
+    ```sh
+    python3.11 -m venv .devenv
+    source .devenv/bin/activate
+    # under cdk
+    pip install -r requirements.txt
+    # Verify 
+    cdk lynch
+    # Do a stack update
+    cdk deploy
+    ```
+
+* 
