@@ -66,6 +66,8 @@ class ACMmainStack(Stack):
 
 
     def defineCarTableDataBase(self):
+        """
+        """
         carTable = dynamodb.TableV2(self, "CarsTable",
                 table_name="acm_cars",
                 partition_key=dynamodb.Attribute(name="car_id", type=dynamodb.AttributeType.STRING),
@@ -89,20 +91,19 @@ class ACMmainStack(Stack):
             id="lambda-powertools",
             layer_version_arn=f"arn:aws:lambda:{env.region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:61"
         )
+        common_dep_layer = aws_lambda.LayerVersion(self, "CommonLayer",
+            removal_policy=RemovalPolicy.RETAIN,
+            code=aws_lambda.Code.from_asset(path="../src/package.zip"),
+            compatible_architectures=[aws_lambda.Architecture.X86_64, aws_lambda.Architecture.ARM_64]
+        )
         current_date =  datetime.now().strftime('%d-%m-%Y')   
         acm_lambda = aws_lambda.Function(self, 'CarMgrService',
             runtime=aws_lambda.Runtime.PYTHON_3_11,
-            code= aws_lambda.Code.from_asset(path="../src/",
-                                             bundling=BundlingOptions(
-                                                 image= aws_lambda.Runtime.PYTHON_3_11.bundling_image,
-                                                 command= [
-                                                     'bash','-c','pip3 install -r requirements.txt  --python-version 3.11 --only-binary=:all: -t /asset-output && cp -rau . /asset-output'
-                                                 ],
-                                            )),
+            code=aws_lambda.Code.from_asset(path="../src/"),
             function_name= "CarMgrService",
             handler='app.handler',
             role=lambda_role,
-            layers=[powertools_layer],
+            layers=[powertools_layer,common_dep_layer],
             environment = {
                 "CAR_EVENT_BUS":carEventBus.event_bus_name,
                 "CAR_TABLE_NAME":carTable.table_name,
@@ -208,7 +209,11 @@ class ACMmainStack(Stack):
                                     exclude_characters="/@"
                                 ))
     
+    
     def code_deploy_app(self,fctAlias):
+        """
+        Use CodeDeploy to define the application and application group linked to the function alias for blue/green deployment
+        """
         application=  aws_codedeploy.LambdaApplication(self, "AcmCodeDeploy",
             application_name="AcmMicroservice"
         )
@@ -218,3 +223,16 @@ class ACMmainStack(Stack):
             deployment_config=aws_codedeploy.LambdaDeploymentConfig.LINEAR_10_PERCENT_EVERY_1_MINUTE
         )
         return application
+        
+        
+        
+    # dead code
+    """
+    code= aws_lambda.Code.from_asset(path="../src/",
+                                     bundling=BundlingOptions(
+                                         image= aws_lambda.Runtime.PYTHON_3_11.bundling_image,
+                                         command= [
+                                             'bash','-c','pip3 install -r requirements.txt  --python-version 3.11 --only-binary=:all: -t /asset-output && cp -rau . /asset-output'
+                                         ],
+                                    )),
+    """

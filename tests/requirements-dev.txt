@@ -2,4 +2,3 @@ pytest
 aws-lambda-powertools[all]
 moto
 moto[all]
-unittest

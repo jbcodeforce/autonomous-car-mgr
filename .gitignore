@@ -3,3 +3,4 @@ site/
 **/.venv/
 sam/
 **/package/
+**/__pycache__
