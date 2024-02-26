@@ -41,6 +41,7 @@ class ACMmainStack(Stack):
                 )
         acm_lambda, alias= self.defineAutonomousCarManagerAsLambdaFct(carTable,carEventBus,env)
         self.defineAutonomousCarManagerAPIs(alias)
+        self.code_deploy_app(alias)
         carEventBus.grant_all_put_events(acm_lambda)
         self.defineSNSTargetToEventBus(carEventBus)
         self.defineCWlogsAsTargetToEventBus(carEventBus)
@@ -92,14 +93,13 @@ class ACMmainStack(Stack):
         )
         common_dep_layer = aws_lambda.LayerVersion(self, "CommonLayer",
             removal_policy=RemovalPolicy.RETAIN,
-            
             code=aws_lambda.Code.from_asset(path="../src/package.zip"),
             compatible_architectures=[aws_lambda.Architecture.X86_64, aws_lambda.Architecture.ARM_64]
         )
         current_date =  datetime.now().strftime('%d-%m-%Y')   
         acm_lambda = aws_lambda.Function(self, 'CarMgrService',
             runtime=aws_lambda.Runtime.PYTHON_3_11,
-            code=aws_lambda.Code.from_asset(path="../src/", exclude="../src/package.zip"),
+            code=aws_lambda.Code.from_asset(path="../src/"),
             function_name= "CarMgrService",
             handler='app.handler',
             role=lambda_role,
@@ -210,10 +210,29 @@ class ACMmainStack(Stack):
                                 ))
     
     
+    def code_deploy_app(self,fctAlias):
+        """
+        Use CodeDeploy to define the application and application group linked to the function alias for blue/green deployment
+        """
+        application=  aws_codedeploy.LambdaApplication(self, "AcmCodeDeploy",
+            application_name="AcmMicroservice"
+        )
+        deployment_group = aws_codedeploy.LambdaDeploymentGroup(self, "AcmBlueGreenDeployment",
+            application=application,  # optional property: one will be created for you if not provided
+            alias=fctAlias,
+            deployment_config=aws_codedeploy.LambdaDeploymentConfig.LINEAR_10_PERCENT_EVERY_1_MINUTE
+        )
+        return application
         
         
         
     # dead code
     """
-
+    code= aws_lambda.Code.from_asset(path="../src/",
+                                     bundling=BundlingOptions(
+                                         image= aws_lambda.Runtime.PYTHON_3_11.bundling_image,
+                                         command= [
+                                             'bash','-c','pip3 install -r requirements.txt  --python-version 3.11 --only-binary=:all: -t /asset-output && cp -rau . /asset-output'
+                                         ],
+                                    )),
     """
