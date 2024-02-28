@@ -5,3 +5,4 @@ sam/
 **/package/
 **/__pycache__
 
+**/.env

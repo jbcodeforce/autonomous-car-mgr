@@ -90,20 +90,15 @@ class ACMmainStack(Stack):
             id="lambda-powertools",
             layer_version_arn=f"arn:aws:lambda:{env.region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:61"
         )
-        common_dep_layer = aws_lambda.LayerVersion(self, "CommonLayer",
-            removal_policy=RemovalPolicy.RETAIN,
-            
-            code=aws_lambda.Code.from_asset(path="../src/package.zip"),
-            compatible_architectures=[aws_lambda.Architecture.X86_64, aws_lambda.Architecture.ARM_64]
-        )
+        
         current_date =  datetime.now().strftime('%d-%m-%Y')   
         acm_lambda = aws_lambda.Function(self, 'CarMgrService',
-            runtime=aws_lambda.Runtime.PYTHON_3_11,
-            code=aws_lambda.Code.from_asset(path="../src/", exclude="../src/package.zip"),
+            runtime=aws_lambda.Runtime.PYTHON_3_12,
+            code=aws_lambda.Code.from_asset(path="../src/code.zip"),
             function_name= "CarMgrService",
             handler='app.handler',
             role=lambda_role,
-            layers=[powertools_layer,common_dep_layer],
+            layers=[powertools_layer],
             environment = {
                 "CAR_EVENT_BUS":carEventBus.event_bus_name,
                 "CAR_TABLE_NAME":carTable.table_name,
@@ -215,5 +210,10 @@ class ACMmainStack(Stack):
         
     # dead code
     """
-
+common_dep_layer = aws_lambda.LayerVersion(self, "CommonLayer",
+            removal_policy=RemovalPolicy.RETAIN,
+            
+            code=aws_lambda.Code.from_asset(path="../src/package.zip"),
+            compatible_architectures=[aws_lambda.Architecture.X86_64, aws_lambda.Architecture.ARM_64]
+        )
     """

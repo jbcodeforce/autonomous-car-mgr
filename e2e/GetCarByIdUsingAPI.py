@@ -1,5 +1,7 @@
 import requests
-import argparse
+import argparse,os
+
+API_GTW=os.getenv('API_GTW')
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -8,6 +10,5 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
-
-    response = requests.get(f"https://dcoy1ihhwa.execute-api.us-west-2.amazonaws.com/dev/cars/{args.id}")
+    response = requests.get(f"{API_GTW}/cars/{args.id}")
     print(response.json())

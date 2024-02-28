@@ -137,15 +137,16 @@ Servers do not run continuously, and a function invocation is time boxed to 15 m
 
     Internal SQS queue persists messages for up to 6 hours. Queued events are retrieved in batches by Lambda’s poller instances, which also delete messages from the queue. The poller fleet is a group of Amazon EC2 instances whose purpose is to process queued event invocations which have not yet been processed. The poller propagates the invoke using the synchronous "frontend invoke svc". Once the invoke to the handler succeed, the poller gets the response and can delete the message from the queue. When the message fails all processing attempts, it will follow the same visibility timeout as in SQS, the message is discarded by Lambda. The dead letter queue (DLQ) feature allows sending unprocessed events from asynchronous invocations to an Amazon SQS queue or an Amazon SNS topic defined by the developer. The **Queue manager svc** manages queues, monitors them for any backups. It interacts with the **Leasing svc** which manages which pollers are processing with which queues. The Leasing svc also manages and monitors pollers.
 
-    * **Event source mapping** is used to poll messages from different streaming sources and then synchronously calls the Lambda function. It reads using batching and sends all the events as argument to the function. If the function returns an error for any of the messages in a batch, Lambda retries the whole batch of messages until processing succeeds or the messages expire. It supports error handling. It is based on the same architecture as the asynchronous invoke frontend and poller fleet, except the code of the poller is specific to the event source. 
+???+ info **Event source mapping**
+    Event source mapping is used to poll messages from different streaming sources and then synchronously calls the Lambda function. It reads using batching and sends all the events as argument to the function. If the function returns an error for any of the messages in a batch, Lambda retries the whole batch of messages until processing succeeds or the messages expire. It supports error handling. It is based on the same architecture as the asynchronous invoke frontend and poller fleet, except the code of the poller is specific to the event source. 
     
-        ![](./diagrams/evt-mapping-lambda-flow.drawio.png){width=800}
-        
-        **Figure 9: Event source processing to synch lambda**
+    ![](./diagrams/evt-mapping-lambda-flow.drawio.png){width=800}
+    
+    **Figure 9: Event source processing to synch lambda**
 
-        As a managed service within Lambda the poller fleet is serverless too.
+    As a managed service within Lambda the poller fleet is serverless too.
 
-    * If the Lambda service is not available. Callers may queue their payload on the client-side for retry.
+* If the Lambda service is not available. Callers may queue their payload on the client-side for retry.
 
 
 ### Event sourcing
@@ -166,7 +167,7 @@ Therefore Lambda function, when it manages a business entity, can generate event
 
 ![](./diagrams/timestream-event-srcing.drawio.png){width=600}
 
-**Figure 12: Outbox pattern with Amazon Timestream**
+**Figure 11: Outbox pattern with Amazon Timestream**
 
 Timestream is serverless and automatically scales up or down to adjust capacity and performance. The architecture uses different layers to increase decoupling, and a cellular architecture using smaller copies of the time tables, with specific networking end-points.
 
