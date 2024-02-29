@@ -6,3 +6,5 @@ sam/
 **/__pycache__
 
 **/.env
+tmp/
+**/.aws-sam/

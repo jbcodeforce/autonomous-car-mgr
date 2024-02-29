@@ -12,7 +12,7 @@ There is no need to be prescriptive in this domain as each developer has his/he 
 
 The core element of the infrastructure as code (IaC) on AWS is [AWS CloudFormation](https://aws.amazon.com/cloudformation). If developers or DevOps engineers prefer to use programming language to define service configuration and code deployment the [AWS Cloud Development Kit](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html) is a powerful solution. It uses code which can be integrated in the same Git repository as application / microservice code.
 
-Below is an example of repository structure, with separate folder for IaC code (here based on AWS CDK), integration test (`e2`), src and unit tests folders.
+Below is an example of repository structure, with separate folder for IaC code (here based on AWS CDK), integration tests under `e2` folder, `src` for lambda code, and unit `tests` folders.
 
 ```sh
 autonomous_car_mgr
@@ -50,13 +50,20 @@ See an example of CDK application to deploy API Gateway, Lambda function impleme
 
 See [AWS CDK Python Reference](https://docs.aws.amazon.com/cdk/api/v2/python/) to get examples and API description to create anything in AWS.
 
-As a pre-requisite developers need to bootstrap CDK in the target deployment region using `cdk bootstrap`. Then any code or IaC change can be deployed using:
+As a pre-requisite developers need to bootstrap CDK in the target deployment region using `cdk bootstrap`. 
+
+CDK code can be validated using
+
+```sh
+cdk synth
+```
+which creates a CloudFormation template in cdk.out folder.
+
+Then any code or IaC updates can be deployed using:
 
 ```sh
 cdk deploy
 ```
-
-which creates a CloudFormation template.
 
 ### [AWS SAM - Serverless Application Model](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html)
 
@@ -84,9 +91,39 @@ See [SAM templates here](https://github.com/aws/aws-sam-cli-app-templates)
 * [A Complete SAM Workshop.](https://catalog.workshops.aws/complete-aws-sam/en-US)
 and the [creating your first API from scratch with OpenAPI and AWS SAM](https://catalog.us-east-1.prod.workshops.aws/workshops/4ff2d034-dee1-4570-93d9-11a54cc5d60c/en-US).
 
-SAM CLI supports local development and testing of Lambda apps, CDK provides a full-featured local development environment with watch mode.
+SAM CLI supports local development and testing of Lambda apps. To run AWS SAM projects locally, you need to have Docker installed and running on your local machine. it will create a local HTTP server hosting all of template's functions (need to specify the DOCKER_HOST env variable if not, you may get `Error: Running AWS SAM projects locally requires Docker. Have you got it installed and running?`). 
 
-Developer can use the AWS SAM CLI to locally test and build serverless applications defined using the AWS Cloud Development Kit (AWS CDK). [See Getting started with AWS SAM and the AWS CDK.](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-cdk-getting-started.html).
+```sh
+DOCKER_HOST=unix:///$HOME/.docker/run/docker.sock sam local start-api
+```
+
+SAM CLI can also being [combined with the template CDK created](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-cdk-getting-started.html): basically the CDK defines the lambda functions and other resources, while SAM invoke the function from the definition within the template.
+
+```sh
+cdk synth
+# it will create a cloud formation template under cdk.out folder
+DOCKER_HOST=unix:///$HOME/.docker/run/docker.sock sam local function_name -t  cdk.out/ACSCarMgr.template.json
+```
+
+Now if the Lambda function has dependencies it is recommended to do a sam build using the template from CDK and then invokes from the created content. The build will look at the requirements.txt for the function and build every assets in the folder `.aws-sam/build` folder:
+
+```sh
+sam build -t cdk.out/TmpStack.template.json
+DOCKER_HOST=unix:///$HOME/.docker/run/docker.sock sam local invoke MyFunction --no-event
+```
+
+When testing a request coming from API Gateway we can use an event.json payload 
+
+```sh
+DOCKER_HOST=unix:///$HOME/.docker/run/docker.sock sam local invoke MyFunction -e events/getcars.json
+```
+
+Also CDK provides a full-featured local development environment with watch mode, so updating deployed Lambda function from local update.
+
+```dh
+cdk watch
+```
+
 
 ## Code boilerplate
 
@@ -109,6 +146,8 @@ When using Powertools REST resolver, the API Gateway API needs to be a proxy int
 def handler(message: dict, context: LambdaContext) -> dict:
     return app.resolve(message, context)
 ```
+
+The Powertools library is integrated as a Lambda layer.
 
 ### Layers for reuse
 
@@ -137,7 +176,7 @@ aws lambda publish-layer-version --layer-name common-python3 \
 
 ### Deeper dive
 
-* [Getting started with Powertools]()
+* [Getting started with Powertools](https://docs.powertools.aws.dev/lambda/python/latest/)
 * [How to use layer to manage common dependencies in Lambda.](https://docs.aws.amazon.com/lambda/latest/dg/chapter-layers.html#lambda-layers-overview)
 
 ### Unit testing
@@ -207,7 +246,7 @@ In case of import error on Lambda execution, ask Amazon Q and [re:Post](https://
 
 ### Integration tests
 
-Once the solution is deployed we can test by using the API endpoints. The tests can be defined using Python script files (under [e2e folder](https://github.com/jbcodeforce/autonomous-car-mgr/tree/main/e2e)).
+Once the solution is deployed we can test by using the API Gateway API endpoints. The tests can be defined using Python script files (under [e2e folder](https://github.com/jbcodeforce/autonomous-car-mgr/tree/main/e2e)).
 
 ```sh
 python GetCarByIdUsingAPI.py 2

@@ -10,7 +10,7 @@ This repository includes a set of best practices around developing a solution us
 ### Architecture Patterns
 
 * [x] Review Lambda runtime architecture (internal view). [See this section >>> ](./architecture.md/#lambda-run-time-architecture)
-* [x] Serverless architecture patterns: how to map to a microservice approach ? what are the best practices for using Lambda functions to ensure loose coupling and service autonomy?
+* [x] Serverless architecture patterns: how to map to a microservice approach ? what are the best practices for using Lambda functions to ensure loose coupling and service autonomy? 
 * [x] How to use event sourcing with Lambda? 
 * [ ] How to handle state management in a stateless environment like AWS Lambda, especially for complex workflows or transactions?
 * [x] What are the best practices for integrating AWS Lambda with other AWS services, particularly for event-driven architectures?
@@ -55,15 +55,14 @@ This repository includes a set of best practices around developing a solution us
 ### Development, Operation and CI/CD
 
 * [ ] What are the best practices for deploying Lambda functions in a CI/CD pipeline, and how to manage version control and rollbacks?
-* [ ] How to support blue-green deployments or canary releases with AWS Lambda?
+* [x] How to support blue-green deployments or canary releases with AWS Lambda? [A >>>](./dev_ops.md/#bluegreen)
 * [x] How should error handling be implemented in AWS Lambda to ensure reliability and fault tolerance?
 * [x] What to monitor and logging tools or practices do you recommend for AWS Lambda functions to ensure proactive issue resolution?
-* [ ] What tools to do local development and testing of AWS Lambda functions?
+* [x] What tools to do local development and testing of AWS Lambda functions?
 * [ ] How can teams effectively debug Lambda functions, particularly when integrated with other AWS services?
 * [ ] How to adopt CI/CD practices for Lambda functions? How to automate deployment while ensuring rollback capabilities for stability?
-* [ ] How to effectively use versioning and aliases in AWS Lambda to manage deployments and facilitate A/B testing?
-* [ ] Beyond CloudWatch, are there any third-party tools or AWS services that provide deeper insights into Lambda function performance and health?
-* [ ] How to implement anomaly detection in Lambda executions to quickly identify and respond to unusual patterns or errors?
+* [x] How to effectively use versioning and aliases in AWS Lambda to manage deployments and facilitate A/B testing?
+* [x] How to implement anomaly detection in Lambda executions to quickly identify and respond to unusual patterns or errors?
 
 [>>> See discussions in development and operations section](./dev_ops.md)
 

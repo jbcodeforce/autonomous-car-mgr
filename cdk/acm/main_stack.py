@@ -93,8 +93,8 @@ class ACMmainStack(Stack):
         
         current_date =  datetime.now().strftime('%d-%m-%Y')   
         acm_lambda = aws_lambda.Function(self, 'CarMgrService',
-            runtime=aws_lambda.Runtime.PYTHON_3_12,
-            code=aws_lambda.Code.from_asset(path="../src/code.zip"),
+            runtime=aws_lambda.Runtime.PYTHON_3_11,
+            code=aws_lambda.Code.from_asset(path="../src"),
             function_name= "CarMgrService",
             handler='app.handler',
             role=lambda_role,
