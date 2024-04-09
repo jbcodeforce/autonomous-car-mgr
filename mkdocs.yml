@@ -5,6 +5,7 @@ nav:
   - Introduction: index.md
   - Architecture: architecture.md
   - Scaling: scaling.md
+  - WebSocket: websocket-lambda.md
   - Security: security.md
   - DevOps: dev_ops.md
   - Cost : cost.md
