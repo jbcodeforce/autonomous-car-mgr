@@ -1,0 +1,1260 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Jerome Boyer">
+      
+      
+      
+        <link rel="prev" href="../security/">
+      
+      
+        <link rel="next" href="../cost/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.17">
+    
+    
+      
+        <title>DevOps - Lambda deeper studies</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.bcfcd587.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#devops" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Lambda deeper studies" class="md-header__button md-logo" aria-label="Lambda deeper studies" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Lambda deeper studies
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              DevOps
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/jbcodeforce/autonomous-car-mgr.git" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Lambda deeper studies" class="md-nav__button md-logo" aria-label="Lambda deeper studies" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Lambda deeper studies
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/jbcodeforce/autonomous-car-mgr.git" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Introduction
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scaling/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Scaling
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../websocket-lambda/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    WebSocket
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Security
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    DevOps
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    DevOps
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#development-tooling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Development tooling
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Development tooling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cdk" class="md-nav__link">
+    <span class="md-ellipsis">
+      CDK
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aws-sam-serverless-application-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      AWS SAM - Serverless Application Model
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-boilerplate" class="md-nav__link">
+    <span class="md-ellipsis">
+      Code boilerplate
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Code boilerplate">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#layers-for-reuse" class="md-nav__link">
+    <span class="md-ellipsis">
+      Layers for reuse
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deeper-dive" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deeper dive
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unit-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unit testing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration tests
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-handling-by-execution-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      Error Handling by execution model
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitoring
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Monitoring">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cloudwatch-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      CloudWatch monitoring
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-aws-powertools" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using AWS Powertools
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#asynchronous-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Asynchronous processing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cicd-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      CI/CD pipeline
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CI/CD pipeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#version-management-rollback" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version management - Rollback
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bluegreen" class="md-nav__link">
+    <span class="md-ellipsis">
+      Blue/Green
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#canary-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Canary deployment
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#other-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other tools
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Other tools">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cloud9" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cloud9
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cost/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cost
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#development-tooling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Development tooling
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Development tooling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cdk" class="md-nav__link">
+    <span class="md-ellipsis">
+      CDK
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aws-sam-serverless-application-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      AWS SAM - Serverless Application Model
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-boilerplate" class="md-nav__link">
+    <span class="md-ellipsis">
+      Code boilerplate
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Code boilerplate">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#layers-for-reuse" class="md-nav__link">
+    <span class="md-ellipsis">
+      Layers for reuse
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deeper-dive" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deeper dive
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unit-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unit testing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration tests
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-handling-by-execution-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      Error Handling by execution model
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitoring
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Monitoring">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cloudwatch-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      CloudWatch monitoring
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-aws-powertools" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using AWS Powertools
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#asynchronous-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Asynchronous processing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cicd-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      CI/CD pipeline
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CI/CD pipeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#version-management-rollback" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version management - Rollback
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bluegreen" class="md-nav__link">
+    <span class="md-ellipsis">
+      Blue/Green
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#canary-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Canary deployment
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#other-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other tools
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Other tools">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cloud9" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cloud9
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="devops">DevOps<a class="headerlink" href="#devops" title="Permanent link">&para;</a></h1>
+<p>This section addresses development practices and operations for Lambda application. </p>
+<p>As solution deployed on AWS, and integrating with AWS services, developers need to study the <a href="https://boto3.amazonaws.com/v1/documentation/api/latest/index.html">SDK (e.g. Python boto3 module)</a>.</p>
+<p>There are a lot of source of information, starting by <a href="https://aws.amazon.com/devops/">aws.amazon.com/devops/</a>.</p>
+<h2 id="development-tooling">Development tooling<a class="headerlink" href="#development-tooling" title="Permanent link">&para;</a></h2>
+<p>There is no need to be prescriptive in this domain as each developer has his/he own habit. However as the solution will run on AWS cloud there are a lot of nice tools and open source content developers should consider.</p>
+<p>The core element of the infrastructure as code (IaC) on AWS is <a href="https://aws.amazon.com/cloudformation">AWS CloudFormation</a>. If developers or DevOps engineers prefer to use programming language to define service configuration and code deployment the <a href="https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html">AWS Cloud Development Kit</a> is a powerful solution. It uses code which can be integrated in the same Git repository as application / microservice code.</p>
+<p>Below is an example of repository structure, with separate folder for IaC code (here based on AWS CDK), integration tests under <code>e2</code> folder, <code>src</code> for lambda code, and unit <code>tests</code> folders.</p>
+<div class="highlight"><pre><span></span><code>autonomous_car_mgr
+├──<span class="w"> </span>IaC
+│<span class="w">   </span>├──<span class="w"> </span>README.md
+│<span class="w">   </span>├──<span class="w"> </span>acm
+│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>__init__.py
+│<span class="w">   </span>│<span class="w">   </span>└──<span class="w"> </span>main_stack.py
+│<span class="w">   </span>├──<span class="w"> </span>app.py
+│<span class="w">   </span>├──<span class="w"> </span>cdk.json
+│<span class="w">   </span>├──<span class="w"> </span>requirements-dev.txt
+│<span class="w">   </span>├──<span class="w"> </span>requirements.txt
+│<span class="w">   </span>├──<span class="w"> </span>source.bat
+│<span class="w">   </span>└──<span class="w"> </span>tests
+├──<span class="w"> </span>e2e
+│<span class="w">   </span>├──<span class="w"> </span>CreateCarRecords.py
+│<span class="w">   </span>├──<span class="w"> </span>CreateNewCarViaAPI.py
+│<span class="w">   </span>├──<span class="w"> </span>GetCarById.py
+├──<span class="w"> </span>src
+│<span class="w">   </span>├──<span class="w"> </span>carmgr
+│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>__init__.py
+│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>acm_model.py
+│<span class="w">   </span>│<span class="w">   </span>└──<span class="w"> </span>app.py
+│<span class="w">   </span>└──<span class="w"> </span>requirements.txt
+└──<span class="w"> </span>tests
+<span class="w">    </span>├──<span class="w"> </span>requirements-dev.txt
+<span class="w">    </span>└──<span class="w"> </span>ut
+</code></pre></div>
+<h3 id="cdk">CDK<a class="headerlink" href="#cdk" title="Permanent link">&para;</a></h3>
+<p>CDK uses an imperative programming style which can make complex logic and conditionals easier to implement compared to the declarative style of AWS SAM templates.</p>
+<p>See an example of CDK application to deploy API Gateway, Lambda function implementing a simple microservice, and DynamoDB table <a href="https://github.com/jbcodeforce/autonomous-car-mgr/blob/main/cdk/acm/main_stack.py">here.</a>. </p>
+<p>See <a href="https://docs.aws.amazon.com/cdk/api/v2/python/">AWS CDK Python Reference</a> to get examples and API description to create anything in AWS.</p>
+<p>As a pre-requisite developers need to bootstrap CDK in the target deployment region using <code>cdk bootstrap</code>. </p>
+<p>CDK code can be validated using</p>
+<p><div class="highlight"><pre><span></span><code>cdk<span class="w"> </span>synth
+</code></pre></div>
+which creates a CloudFormation template in cdk.out folder.</p>
+<p>Then any code or IaC updates can be deployed using:</p>
+<div class="highlight"><pre><span></span><code>cdk<span class="w"> </span>deploy
+</code></pre></div>
+<h3 id="aws-sam-serverless-application-model"><a href="https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html">AWS SAM - Serverless Application Model</a><a class="headerlink" href="#aws-sam-serverless-application-model" title="Permanent link">&para;</a></h3>
+<p>AWS SAM is an extension of AWS CloudFormation with a simpler syntax for configuring common serverless application resources such as functions, triggers, databases and APIs. It offers the following benefits:</p>
+<ul>
+<li>Define the application infrastructure as code quickly, using less code.</li>
+<li>Manage the serverless applications through their entire development lifecycle.</li>
+<li>Quickly provision permissions between resources with AWS SAM connectors.</li>
+<li>SAM CLI provides a Lambda-like execution environment that lets you locally build, test, and debug applications defined by SAM templates or through the AWS Cloud Development Kit (CDK).</li>
+<li>Continuously sync local changes to the cloud as we develop.</li>
+<li>On top of CloudFormation or Terraform.</li>
+</ul>
+<p>SAM includes two parts:</p>
+<ol>
+<li>SAM template specification: It is an extension on top of AWS CloudFormation.</li>
+<li>A CLI to create new project, build and deploy, perform local debugging and testing, configure pipeline.</li>
+</ol>
+<p>During deployment, SAM transforms and expands the SAM syntax into AWS CloudFormation syntax.</p>
+<p>See <a href="https://github.com/aws/aws-sam-cli-app-templates">SAM templates here</a></p>
+<ul>
+<li>See the <a href="https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-getting-started-hello-world.html">Getting started tutorial.</a></li>
+<li><a href="https://catalog.workshops.aws/complete-aws-sam/en-US">A Complete SAM Workshop.</a>
+and the <a href="https://catalog.us-east-1.prod.workshops.aws/workshops/4ff2d034-dee1-4570-93d9-11a54cc5d60c/en-US">creating your first API from scratch with OpenAPI and AWS SAM</a>.</li>
+</ul>
+<p>SAM CLI supports local development and testing of Lambda apps. To run AWS SAM projects locally, you need to have Docker installed and running on your local machine. it will create a local HTTP server hosting all of template's functions (need to specify the DOCKER_HOST env variable if not, you may get <code>Error: Running AWS SAM projects locally requires Docker. Have you got it installed and running?</code>). </p>
+<div class="highlight"><pre><span></span><code><span class="nv">DOCKER_HOST</span><span class="o">=</span>unix:///<span class="nv">$HOME</span>/.docker/run/docker.sock<span class="w"> </span>sam<span class="w"> </span><span class="nb">local</span><span class="w"> </span>start-api
+</code></pre></div>
+<p>SAM CLI can also being <a href="https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-cdk-getting-started.html">combined with the template CDK created</a>: basically the CDK defines the lambda functions and other resources, while SAM invoke the function from the definition within the template.</p>
+<div class="highlight"><pre><span></span><code>cdk<span class="w"> </span>synth
+<span class="c1"># it will create a cloud formation template under cdk.out folder</span>
+<span class="nv">DOCKER_HOST</span><span class="o">=</span>unix:///<span class="nv">$HOME</span>/.docker/run/docker.sock<span class="w"> </span>sam<span class="w"> </span><span class="nb">local</span><span class="w"> </span>function_name<span class="w"> </span>-t<span class="w">  </span>cdk.out/ACSCarMgr.template.json
+</code></pre></div>
+<p>Now if the Lambda function has dependencies it is recommended to do a sam build using the template from CDK and then invokes from the created content. The build will look at the requirements.txt for the function and build every assets in the folder <code>.aws-sam/build</code> folder:</p>
+<div class="highlight"><pre><span></span><code>sam<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>cdk.out/TmpStack.template.json
+<span class="nv">DOCKER_HOST</span><span class="o">=</span>unix:///<span class="nv">$HOME</span>/.docker/run/docker.sock<span class="w"> </span>sam<span class="w"> </span><span class="nb">local</span><span class="w"> </span>invoke<span class="w"> </span>MyFunction<span class="w"> </span>--no-event
+</code></pre></div>
+<p>When testing a request coming from API Gateway we can use an event.json payload </p>
+<div class="highlight"><pre><span></span><code><span class="nv">DOCKER_HOST</span><span class="o">=</span>unix:///<span class="nv">$HOME</span>/.docker/run/docker.sock<span class="w"> </span>sam<span class="w"> </span><span class="nb">local</span><span class="w"> </span>invoke<span class="w"> </span>MyFunction<span class="w"> </span>-e<span class="w"> </span>events/getcars.json
+</code></pre></div>
+<p>Also CDK provides a full-featured local development environment with watch mode, so updating deployed Lambda function from local update.</p>
+<div class="highlight"><pre><span></span><code>cdk watch
+</code></pre></div>
+<h2 id="code-boilerplate">Code boilerplate<a class="headerlink" href="#code-boilerplate" title="Permanent link">&para;</a></h2>
+<p><a href="https://docs.powertools.aws.dev/lambda/python/">AWS Powertools</a> has a REST resolver to annotate function to support different REST resource paths and HTTP verbs. It leads to cleaner code, and easier to test the business logic: each path and HTTP method is implemented by different function:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/cars/&lt;car_id&gt;&quot;</span><span class="p">)</span>
+<span class="nd">@tracer</span><span class="o">.</span><span class="n">capture_method</span>
+<span class="k">def</span> <span class="nf">getCarUsingCarId</span><span class="p">(</span><span class="n">car_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="n">car</span> <span class="o">=</span> <span class="n">car_table</span><span class="o">.</span><span class="n">get_item</span><span class="p">(</span> <span class="n">Key</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;car_id&#39;</span><span class="p">:</span> <span class="n">car_id</span><span class="p">})</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">car</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">car</span><span class="p">[</span><span class="s1">&#39;Item&#39;</span><span class="p">]</span>
+</code></pre></div>
+<p><a href="https://github.com/jbcodeforce/autonomous-car-mgr/blob/main/src/carmgr/app.py">See the app.py code</a> and how to unit test it using pytest <a href="https://github.com/jbcodeforce/autonomous-car-mgr/blob/main/tests/ut/test_acr_mgr.py">test_acr_mgr.py</a>.</p>
+<p>When using Powertools REST resolver, the API Gateway API needs to be a proxy integration to Lambda as the REST resolver will use the metadata of the request.</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">LambdaContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">app</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+</code></pre></div>
+<p>The Powertools library is integrated as a Lambda layer.</p>
+<h3 id="layers-for-reuse">Layers for reuse<a class="headerlink" href="#layers-for-reuse" title="Permanent link">&para;</a></h3>
+<p>Layers are packages of libraries or other dependencies that can be used by multiple functions.</p>
+<p>A layer is a ZIP archive that contains libraries, a custom runtime, or other dependencies. <a href="https://docs.aws.amazon.com/lambda/latest/dg/chapter-layers.html">See lambda layer management in product documentation</a>.</p>
+<p>One of the advantage is to see the function code in the Lambda console.</p>
+<p>When you add a layer to a function, Lambda loads the layer content into the /opt directory of that execution environment. </p>
+<p>Example of packaging python dependencies as zip, and create a Lambda Layer to be reused. </p>
+<div class="highlight"><pre><span></span><code>pip3<span class="w"> </span>install<span class="w"> </span>--target<span class="w"> </span>./package<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+<span class="nb">cd</span><span class="w"> </span>package
+zip<span class="w"> </span>-r<span class="w"> </span>../pck.zip<span class="w"> </span>.
+<span class="c1"># use CLI for example </span>
+aws<span class="w"> </span>lambda<span class="w"> </span>publish-layer-version<span class="w"> </span>--layer-name<span class="w"> </span>common-python3<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--description<span class="w"> </span><span class="s2">&quot;A layer for some python lambda&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--license-info<span class="w"> </span><span class="s2">&quot;MIT&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--zip-file<span class="w"> </span>fileb://pck.zip<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--compatible-runtimes<span class="w"> </span>python3.10<span class="w"> </span>python3.11<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--compatible-architectures<span class="w"> </span><span class="s2">&quot;arm64&quot;</span><span class="w"> </span><span class="s2">&quot;x86_64&quot;</span>
+</code></pre></div>
+<h3 id="deeper-dive">Deeper dive<a class="headerlink" href="#deeper-dive" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="https://docs.powertools.aws.dev/lambda/python/latest/">Getting started with Powertools</a></li>
+<li><a href="https://docs.aws.amazon.com/lambda/latest/dg/chapter-layers.html#lambda-layers-overview">How to use layer to manage common dependencies in Lambda.</a></li>
+</ul>
+<h3 id="unit-testing">Unit testing<a class="headerlink" href="#unit-testing" title="Permanent link">&para;</a></h3>
+<p>The unittest can be done using mock library to bypass remote calls. Tests may be defined using pytest library and commands.</p>
+<p>For example the folder: <a href="https://github.com/jbcodeforce/autonomous-car-mgr/tree/main/tests/ut">tests/ut</a> includes test case definitions to test the microservice. </p>
+<div class="highlight"><pre><span></span><code>pytest<span class="w"> </span>-vs
+</code></pre></div>
+<ul>
+<li>Example of test mock for a dynamodb client, using <a href="https://docs.getmoto.org/en/latest/">moto library</a></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">moto</span> <span class="kn">import</span> <span class="n">mock_aws</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;module&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">dynamodb_client</span><span class="p">(</span><span class="n">aws_credentials</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;DynamoDB mock client.&quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">mock_aws</span><span class="p">():</span>
+        <span class="n">conn</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s2">&quot;dynamodb&quot;</span><span class="p">,</span> <span class="n">region_name</span><span class="o">=</span><span class="s2">&quot;us-west-2&quot;</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">conn</span>
+</code></pre></div>
+<ul>
+<li>With injection to tune the app under test</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;module&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">getApp</span><span class="p">(</span><span class="n">dynamodb_client</span><span class="p">,</span><span class="n">populate_table</span><span class="p">,</span><span class="n">event_client</span><span class="p">,</span><span class="n">secret_client</span><span class="p">):</span>
+</code></pre></div>
+<p>See the full code in <a href="https://github.com/jbcodeforce/autonomous-car-mgr/blob/main/tests/ut/test_acr_mgr.py">test_acr_mgr.py</a>.</p>
+<h3 id="deployment">Deployment<a class="headerlink" href="#deployment" title="Permanent link">&para;</a></h3>
+<p>Package the code as ZIP file (250MB limit) or container image (with 10GB limit).</p>
+<p>Lambda can use Layer to simplify code management and reuse. The Powertools library for example can be used as a layer.</p>
+<div class="highlight"><pre><span></span><code><span class="n">powertools_layer</span> <span class="o">=</span> <span class="n">aws_lambda</span><span class="o">.</span><span class="n">LayerVersion</span><span class="o">.</span><span class="n">from_layer_version_arn</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;lambda-powertools&quot;</span><span class="p">,</span>
+            <span class="n">layer_version_arn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;arn:aws:lambda:</span><span class="si">{</span><span class="n">env</span><span class="o">.</span><span class="n">region</span><span class="si">}</span><span class="s2">:017000801446:layer:AWSLambdaPowertoolsPythonV2:61&quot;</span>
+        <span class="p">)</span>
+
+<span class="c1"># referenced in the function definition</span>
+ <span class="n">acm_lambda</span> <span class="o">=</span> <span class="n">aws_lambda</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;CarMgrService&#39;</span><span class="p">,</span>
+     <span class="o">...</span>
+    <span class="n">layers</span><span class="o">=</span><span class="p">[</span><span class="n">powertools_layer</span><span class="p">],</span>
+</code></pre></div>
+<p>But local dependencies can also being deployed as a zip (See <a href="https://docs.aws.amazon.com/lambda/latest/dg/python-package.html#python-package-create-dependencies">the product documentation- Working with .zip file archives for Python</a>) for the explanations on how to do it. With CDK it is possible to use the concept of <a href="https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk/BundlingOptions.html#bundlingoptions">bundling options</a>:</p>
+<div class="highlight"><pre><span></span><code> <span class="n">code</span><span class="o">=</span> <span class="n">aws_lambda</span><span class="o">.</span><span class="n">Code</span><span class="o">.</span><span class="n">from_asset</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;../src/&quot;</span><span class="p">,</span>
+        <span class="n">bundling</span><span class="o">=</span><span class="n">BundlingOptions</span><span class="p">(</span>
+            <span class="n">image</span><span class="o">=</span> <span class="n">aws_lambda</span><span class="o">.</span><span class="n">Runtime</span><span class="o">.</span><span class="n">PYTHON_3_11</span><span class="o">.</span><span class="n">bundling_image</span><span class="p">,</span>
+            <span class="n">command</span><span class="o">=</span> <span class="p">[</span>
+                <span class="s1">&#39;bash&#39;</span><span class="p">,</span><span class="s1">&#39;-c&#39;</span><span class="p">,</span><span class="s1">&#39;pip install -r requirements.txt -t /asset-output &amp;&amp; cp -rau . /asset-output&#39;</span>
+            <span class="p">],</span>
+    <span class="p">)),</span>
+</code></pre></div>
+<p>In case of import error on Lambda execution, ask Amazon Q and <a href="https://repost.aws/knowledge-center/lambda-import-module-error-python">re:Post</a>, some library bundled on Mac will not work on other Lambda runtime.</p>
+<h3 id="integration-tests">Integration tests<a class="headerlink" href="#integration-tests" title="Permanent link">&para;</a></h3>
+<p>Once the solution is deployed we can test by using the API Gateway API endpoints. The tests can be defined using Python script files (under <a href="https://github.com/jbcodeforce/autonomous-car-mgr/tree/main/e2e">e2e folder</a>).</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>GetCarByIdUsingAPI.py<span class="w"> </span><span class="m">2</span>
+</code></pre></div>
+<h2 id="error-handling-by-execution-model">Error Handling by execution model<a class="headerlink" href="#error-handling-by-execution-model" title="Permanent link">&para;</a></h2>
+<p>As a general practice, implement error handling within each function rather than propagating errors up the call chain. This prevents failures in one function from impacting others.</p>
+<p>Implement throttling, retries and DLQs between functions to avoid failures in one function causing cascading failures in others.</p>
+<p>There are different ways to support error handling, depending of the integration and communication protocol.</p>
+<details open="open">
+<summary>API Gateway - synchronous call</summary>
+<ul>
+<li><strong>Timeout</strong> – API Gateway has a 30-second timeout. If the Lambda function hasn't responded to the request within 30 seconds, an error is returned to the client caller.</li>
+<li><strong>Retries</strong> – There are no built-in retries if a function fails to execute.</li>
+<li><strong>Error handling</strong> – Generate the SDK from the API stage, and use the backoff and retry mechanisms it provides.</li>
+</ul>
+</details>
+<details open="open">
+<summary>SNS - asynch</summary>
+<ul>
+<li><strong>Timeout</strong> – Asynchronous event sources do not wait for a response from the function's execution. Requests are handed off to Lambda, where they are queued and processed by Lambda.</li>
+<li><strong>Retries</strong> – Asynchronous event sources have built-in retries. If a failure is returned from a function's execution, Lambda Service will attempt that invocation two more times for a total of three attempts to execute the function with its event payload. We can use the Retry Attempts configuration to set the retries to 0 or 1 instead. If Lambda is unable to invoke the function (for example, if there is not enough concurrency available and requests are getting throttled), Lambda will continue to try to run the function again for up to 6 hours by default. We can modify this duration with Maximum Event Age.</li>
+<li><strong>Error handling</strong> - Use the Lambda destinations OnFailure option to send failures to another destination for processing. Alternatively, move failed messages to a dead-letter queue on the function.</li>
+</ul>
+</details>
+<details open="open">
+<summary>Kinesis Data Streams</summary>
+<ul>
+<li><strong>Timeout</strong> – When the retention period for a record expires, the record is no longer available to any consumer (24h). As an event source for Lambda, we can configure <code>Maximum Record Age</code> to tell Lambda to skip processing a data record.</li>
+<li><strong>Retries</strong> –  By default, Lambda retries a failing batch until the retention period for a record expires. We can configure <code>Maximum Retry Attempts</code> so that the Lambda function will skip retrying a batch of records.</li>
+<li><strong>Error handling</strong> - Configure an OnFailure destination on the Lambda function so that when a data record reaches the <code>Maximum Retry Attempts</code> or <code>Maximum Record Age</code>, we can send its metadata, such as shard ID and stream Amazon Resource Name (ARN), to an SQS queue or SNS topic.</li>
+</ul>
+</details>
+<details open="open">
+<summary>SQS Queue</summary>
+<ul>
+<li><strong>Timeout</strong> – When the visibility timeout expires, messages become visible to other consumers on the queue. Set our visibility timeout to 6 times the timeout we configure for our function.</li>
+<li><strong>Retries</strong> – Use the <code>maxReceiveCount</code> on the queue's policy to limit the number of times Lambda will retry to process a failed execution.</li>
+<li><strong>Error handling</strong> - Write our functions to delete each message as it is successfully processed. Move failed messages to a dead-letter queue configured on the source SQS queue.</li>
+</ul>
+</details>
+<details class="dead-letter queues" open="open">
+<summary>Dead-letter</summary>
+<p>We may turn on dead-letter queues and create dedicated dead-letter queue resources using Amazon SNS or Amazon SQS for individual Lambda functions that are invoked by asynchronous event source.</p>
+</details>
+<h2 id="monitoring">Monitoring<a class="headerlink" href="#monitoring" title="Permanent link">&para;</a></h2>
+<h3 id="cloudwatch-monitoring">CloudWatch monitoring<a class="headerlink" href="#cloudwatch-monitoring" title="Permanent link">&para;</a></h3>
+<p><a href="https://docs.aws.amazon.com/lambda/latest/dg/monitoring-functions-access-metrics.html">Lambda monitoring</a> is supported by Amazon CloudWatch, with logs and metrics such as invocation count, duration, and errors. Within CloudWatch, DevOps team may set alarms on certain metrics that may breach, to create notifications to the team.</p>
+<p>Logs need to be added to the Function code. (print() in Python goes to the log). Use boilerplate code like AWS Powertools to control the logging level, participate in Xray reporting to view detailed traces of requests across your application and Lambda functions. This helps pinpoint where latency is occurring.</p>
+<h3 id="using-aws-powertools">Using AWS Powertools<a class="headerlink" href="#using-aws-powertools" title="Permanent link">&para;</a></h3>
+<p><a href="https://docs.powertools.aws.dev/lambda/python/latest/">AWS Powertools</a> includes methods and libraries for quickly implementing consistent logging, metrics, and traces inside your codebase.</p>
+<p>Use X-Ray to understand end to end event flow, cross components of your solution.</p>
+<h3 id="asynchronous-processing">Asynchronous processing<a class="headerlink" href="#asynchronous-processing" title="Permanent link">&para;</a></h3>
+<p>While messages go to dead letter queues to handle errors and monitor messages sent to the DLQ. This helps track failed invocations.</p>
+<h2 id="cicd-pipeline">CI/CD pipeline<a class="headerlink" href="#cicd-pipeline" title="Permanent link">&para;</a></h2>
+<p>We recommend to follow <a href="https://catalog.us-east-1.prod.workshops.aws/workshops/5195ab7c-5ded-4ee2-a1c5-775300717f42/en-US">this workshop - Building CI/CD pipelines for Lambda canary deployments using AWS CDK</a> as a good source on how to do blue/green deployment.</p>
+<p>The autonomous car manager service use the concepts of this workshop, like alias, function versioning, CodeDeploy application.</p>
+<h3 id="version-management-rollback">Version management - Rollback<a class="headerlink" href="#version-management-rollback" title="Permanent link">&para;</a></h3>
+<p>Lambda supports versioning and developer can maintain one or more versions of the lambda function. We can reduce the risk of deploying a new version by configuring the <code>alias</code> to send most of the traffic to the existing version, and only a small percentage of traffic to the new version. Below  is an example of creating one Alias to version 1 and a routing config with Weight at 30% to version 2. Alias enables promoting new lambda function version to production and if we need to rollback a function, we can simply update the alias to point to the desired version. Event source needs to use Alias ARN for invoking the lambda function.</p>
+<div class="highlight"><pre><span></span><code>aws<span class="w"> </span>lambda<span class="w"> </span>create-alias<span class="w"> </span>--name<span class="w"> </span>routing-alias<span class="w"> </span>--function-name<span class="w"> </span>my-function<span class="w"> </span>--function-version<span class="w"> </span><span class="m">1</span><span class="w">  </span>--routing-config<span class="w"> </span><span class="nv">AdditionalVersionWeights</span><span class="o">={</span><span class="s2">&quot;2&quot;</span><span class="o">=</span><span class="m">0</span>.03<span class="o">}</span>
+</code></pre></div>
+<h3 id="bluegreen">Blue/Green<a class="headerlink" href="#bluegreen" title="Permanent link">&para;</a></h3>
+<h3 id="canary-deployment">Canary deployment<a class="headerlink" href="#canary-deployment" title="Permanent link">&para;</a></h3>
+<p>Canary deployment works similarly to blue-green deployment but use a small set of servers before finishing the others. With Lambda to achieve canary deployments we need to use <a href="https://us-west-2.console.aws.amazon.com/codesuite/codedeploy/start?region=us-west-2">AWS CodeDeploy</a>.</p>
+<p>CodeDeploy application is the Lambda version. To enable traffic shifting deployments for Lambda functions, CodeDeploy uses Lambda Aliases, which can balance incoming traffic between two different versions of your function. When you publish a new version of the function to your stack, CodeDeploy will send a small percentage of traffic to the new version, monitor, and validate before shifting 100% of traffic to the new version.</p>
+<p>Below is an example of creating a CodeDeploy application and deployment group to use the last created alias version:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">code_deploy_app</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">fctAlias</span><span class="p">):</span>
+        <span class="n">application</span><span class="o">=</span>  <span class="n">aws_codedeploy</span><span class="o">.</span><span class="n">LambdaApplication</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;AcmCodeDeploy&quot;</span><span class="p">,</span>
+            <span class="n">application_name</span><span class="o">=</span><span class="s2">&quot;AcmMicroservice&quot;</span>
+        <span class="p">)</span>
+        <span class="n">deployment_group</span> <span class="o">=</span> <span class="n">aws_codedeploy</span><span class="o">.</span><span class="n">LambdaDeploymentGroup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;AcmBlueGreenDeployment&quot;</span><span class="p">,</span>
+            <span class="n">application</span><span class="o">=</span><span class="n">application</span><span class="p">,</span>  <span class="c1"># optional property: one will be created for you if not provided</span>
+            <span class="n">alias</span><span class="o">=</span><span class="n">fctAlias</span><span class="p">,</span>
+            <span class="n">deployment_config</span><span class="o">=</span><span class="n">aws_codedeploy</span><span class="o">.</span><span class="n">LambdaDeploymentConfig</span><span class="o">.</span><span class="n">LINEAR_10_PERCENT_EVERY_1_MINUTE</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">application</span>
+</code></pre></div>
+<p>When the CloudFormation has created the CodeDeploy application, we can see the deployment of the Lambda occurring</p>
+<p><img alt="" src="../images/cd_deploy_hist.png" /></p>
+<p>And Lambda having 2 versions with different traffic ratio:</p>
+<p><img alt="" src="../images/lbd_version.png" /></p>
+<h2 id="other-tools">Other tools<a class="headerlink" href="#other-tools" title="Permanent link">&para;</a></h2>
+<h3 id="cloud9">Cloud9<a class="headerlink" href="#cloud9" title="Permanent link">&para;</a></h3>
+<p><a href="https://docs.aws.amazon.com/cloud9/latest/user-guide/ide.html">Cloud9 IDE</a> is a nice solution to get a vscode compatible IDE on linux, so Lambda code can be compatible with runtime.</p>
+<p>Some quick installation updates</p>
+<ul>
+<li>update python, under environment</li>
+</ul>
+<div class="highlight"><pre><span></span><code>python3<span class="w"> </span>--version
+&gt;&gt;<span class="w"> </span>
+wget<span class="w"> </span>https://www.python.org/ftp/python/3.11.8/Python-3.11.8.tgz<span class="w">               </span>
+tar<span class="w"> </span>xzf<span class="w"> </span>Python-3.11.8.tgz<span class="w"> </span>
+
+sudo<span class="w"> </span>./configure<span class="w"> </span>--enable-optimizations<span class="w"> </span>
+sudo<span class="w"> </span>make<span class="w"> </span>altinstall<span class="w"> </span>
+<span class="c1"># The Python binary will be available under the /usr/local/bin directory.</span>
+python3.11<span class="w"> </span>--version
+</code></pre></div>
+<p>To work on the autonomous-car-mgr, git clone the repository. </p>
+<p>Then for:</p>
+<ul>
+<li>
+<p>Start a Python virtual env</p>
+<div class="highlight"><pre><span></span><code>python3.11<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.devenv
+<span class="nb">source</span><span class="w"> </span>.devenv/bin/activate
+</code></pre></div>
+</li>
+<li>
+<p>Package with the Python libraries dependencies for Linux</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Under src</span>
+pip<span class="w"> </span>install<span class="w">  </span>-r<span class="w"> </span>requirements.txt<span class="w"> </span>-t<span class="w"> </span>package
+<span class="nb">cd</span><span class="w"> </span>package
+zip<span class="w"> </span>-r<span class="w"> </span>../package.zip<span class="w"> </span>.
+<span class="nb">cd</span><span class="w"> </span>..<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>rm<span class="w"> </span>-r<span class="w"> </span>package
+</code></pre></div>
+</li>
+<li>
+<p>CDK deployment, be sure to install cdk in a Python 11 virtual env:</p>
+<div class="highlight"><pre><span></span><code>python3.11<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.devenv
+<span class="nb">source</span><span class="w"> </span>.devenv/bin/activate
+<span class="c1"># under cdk</span>
+pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+<span class="c1"># Verify </span>
+cdk<span class="w"> </span>lynch
+<span class="c1"># Do a stack update</span>
+cdk<span class="w"> </span>deploy
+</code></pre></div>
+</li>
+<li></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../security/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Security">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Security
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../cost/" class="md-footer__link md-footer__link--next" aria-label="Next: Cost">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Cost
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["content.code.annotate", "content.tooltips", "navigation.instant", "navigation.tracking", "navigation.footer", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.1e8ae164.min.js"></script>
+      
+    
+  </body>
+</html>

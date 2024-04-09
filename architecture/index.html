@@ -1,0 +1,1154 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Jerome Boyer">
+      
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../scaling/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.17">
+    
+    
+      
+        <title>Architecture - Lambda deeper studies</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.bcfcd587.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#architecture-considerations" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Lambda deeper studies" class="md-header__button md-logo" aria-label="Lambda deeper studies" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Lambda deeper studies
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Architecture
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/jbcodeforce/autonomous-car-mgr.git" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Lambda deeper studies" class="md-nav__button md-logo" aria-label="Lambda deeper studies" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Lambda deeper studies
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/jbcodeforce/autonomous-car-mgr.git" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Introduction
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#design-principles-for-cloud-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Design principles for cloud deployment
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#microservice-and-aws-lambda" class="md-nav__link">
+    <span class="md-ellipsis">
+      Microservice and AWS Lambda
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Microservice and AWS Lambda">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lambda-to-implement-microservice" class="md-nav__link">
+    <span class="md-ellipsis">
+      Lambda to implement microservice
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lambda-constructs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Lambda constructs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lambda-run-time-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Lambda run time architecture
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-sourcing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Event sourcing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fit-for-purpose" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fit for purpose
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Fit for purpose">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#technical-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      Technical constraints
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#design-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      Design constraints
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#designing-for-lambda" class="md-nav__link">
+    <span class="md-ellipsis">
+      Designing for Lambda
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integration-with-other-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration with other services
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Integration with other services">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#apis" class="md-nav__link">
+    <span class="md-ellipsis">
+      APIs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-urls" class="md-nav__link">
+    <span class="md-ellipsis">
+      Function URLs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#eventbridge-as-a-source" class="md-nav__link">
+    <span class="md-ellipsis">
+      EventBridge as a source
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multi-event-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Multi event sources
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#queueing-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Queueing integration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#streaming-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Streaming integration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#service-limits-or-quotas" class="md-nav__link">
+    <span class="md-ellipsis">
+      Service limits or quotas
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scaling/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Scaling
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../websocket-lambda/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    WebSocket
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Security
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev_ops/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DevOps
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cost/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cost
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#design-principles-for-cloud-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Design principles for cloud deployment
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#microservice-and-aws-lambda" class="md-nav__link">
+    <span class="md-ellipsis">
+      Microservice and AWS Lambda
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Microservice and AWS Lambda">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lambda-to-implement-microservice" class="md-nav__link">
+    <span class="md-ellipsis">
+      Lambda to implement microservice
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lambda-constructs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Lambda constructs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lambda-run-time-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Lambda run time architecture
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-sourcing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Event sourcing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fit-for-purpose" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fit for purpose
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Fit for purpose">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#technical-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      Technical constraints
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#design-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      Design constraints
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#designing-for-lambda" class="md-nav__link">
+    <span class="md-ellipsis">
+      Designing for Lambda
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integration-with-other-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration with other services
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Integration with other services">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#apis" class="md-nav__link">
+    <span class="md-ellipsis">
+      APIs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-urls" class="md-nav__link">
+    <span class="md-ellipsis">
+      Function URLs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#eventbridge-as-a-source" class="md-nav__link">
+    <span class="md-ellipsis">
+      EventBridge as a source
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multi-event-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Multi event sources
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#queueing-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Queueing integration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#streaming-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Streaming integration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#service-limits-or-quotas" class="md-nav__link">
+    <span class="md-ellipsis">
+      Service limits or quotas
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="architecture-considerations">Architecture considerations<a class="headerlink" href="#architecture-considerations" title="Permanent link">&para;</a></h1>
+<p><a href="https://docs.aws.amazon.com/lambda/latest/dg/welcome.html">AWS Lambda</a> helps you to run code without managing server. But this does not mean it is the unique serverless capability in AWS, and you should consider adopting good design principles that we can summarize as:</p>
+<h2 id="design-principles-for-cloud-deployment">Design principles for cloud deployment<a class="headerlink" href="#design-principles-for-cloud-deployment" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Stop guessing your capacity needs</strong>: use as much or as little capacity as you need, and scale up and down automatically.</li>
+<li><strong>Test systems at production scale</strong>, then decommission the development resources.</li>
+<li><strong>Automate to make architectural experimentation easier</strong>, using infrastructure as code.</li>
+<li><strong>Allow for evolutionary architectures</strong>: the capability to automate and test on demand, lowers the risk of impact from design changes. This allows systems to evolve over time so that businesses can take advantage of innovations as a standard practice.</li>
+<li><strong>Drive architectures using data</strong>: In the cloud, you can collect data on how your architectural choices affect the behavior of your workload. This lets you make fact-based decisions on how to improve your workload.</li>
+<li><strong>Improve through game days</strong> to simulate events in production. This will help you understand where improvements can be made and can help develop organizational experience in dealing with events.</li>
+</ul>
+<h2 id="microservice-and-aws-lambda">Microservice and AWS Lambda<a class="headerlink" href="#microservice-and-aws-lambda" title="Permanent link">&para;</a></h2>
+<p>The Lambda code fits in the function programming paradigm. As a <a href="https://12factor.net/">twelve factors app</a> Lambda function has the characteristic of a microservice. The entry point is a unique handler function, which constraint the implementation or enforce implementing message routing. The payload is call event, but is a loose definition as agreed upon in classical <a href="https://jbcodeforce.github.io/eda-studies/eda/">event-driven architecture</a>, where it represents something happen as immutable fact. In microservice design, developer has to think about the domain-driven-design (DDD) bounded context. The methodology starts with the <a href="https://jbcodeforce.github.io/eda-studies/event-storming/">event storming practice</a> and applies <a href="https://jbcodeforce.github.io/eda-studies/ddd/">DDD constructs</a> like Command, Aggregate, Event, Repository... Those elements are the grouping that serve as foundations for the microservice implementation. The following figure illustrates how to move from elements discovered during DDD sessions and a microservice supports the Order Entity:</p>
+<p><img alt="" src="../images/evt-driv-ms.png" width="900" /></p>
+<p><strong>Figure 1: Event-driven microservice design elements</strong></p>
+<ul>
+<li>The <strong>Commands</strong> are mapped to APIs</li>
+<li>The <strong>Entity</strong> and <strong>Value Objects</strong> will be persisted via a <strong>Repository</strong></li>
+<li><strong>Events</strong> are defined with schema and produce/consume via a messaging API layer</li>
+</ul>
+<p>The common practice to develop microservice is to adopt a test-driven development, which leads to define and tune the API definition bottom-up. The same apply for the business logic, and the event definitions. Which means the API definition and contract are built from code and shared as an external definition using the <a href="https://www.openapis.org/">OpenAPI</a> standard. The same applies for the asynchronous communication of the events. For that the standard is  <a href="https://www.asyncapi.com/en">asyncAPI</a> document can be generated from code. In Java world, <a href="https://quarkus.io">Quarkus</a> and <a href="https://microprofile.io/">microprofile</a> facilitate the implementation of microservice. Nodejs has the <a href="https://expressjs.com/">expressjs</a> library to define API. Code organization helps to support a single unit deployment. For Python, <a href="https://flask.palletsprojects.com/en/3.0.x/">Flask</a> is a common library to expose REST api.</p>
+<p>Those practices lead to have one Git Repository per microservice, with infrastructure as code to build a container and deploy to target runtime (Kubernetes cluster, AWS ECS Fargate, AWS Lambda). A microservice development ownership is limited to few persons. Microservices do not need to be event-driven on day one. It is important to know and understand the <a href="https://jbcodeforce.github.io/eda-studies/patterns/#microservice-challenges">microservice challenges</a> and the scalability requirements of the service. When the number of service consumers and the number of requests grow above a certain level, and the service level operations are no more well serve, then refactoring are needed to move to the asynchronous, and horizontal scaling (See why <a href="https://jbcodeforce.github.io/eda-studies/eda/#why-eda-is-important-in-2020s">EDA is an evolution of SOA</a>).</p>
+<h3 id="lambda-to-implement-microservice">Lambda to implement microservice<a class="headerlink" href="#lambda-to-implement-microservice" title="Permanent link">&para;</a></h3>
+<p>While Lambda seems to map to microservice principles of separating an application into distinct units of independent deployment, it is still a function programming. There is nothing wrong about that, but the design and granularity of the business logic to fit into this function handler may violate some other software engineering principles, like encapsulation, clear separation of concern, avoid unnecessary complexity, code duplication. Taking the same DDD elements for the Order microservice, we can try to map it into Lambdas and other services to support the same bounded context:</p>
+<p><img alt="" src="../diagrams/micro-to-lambda.drawio.png" /></p>
+<p><strong>Figure 2: From DDD elements to Lambda as microservice</strong></p>
+<p>The command definitions are done in Amazon API Gateway elements not in the form of OpenAPI. To support the DDD Commands implementation in Lambda <a href="https://docs.aws.amazon.com/lambda/latest/operatorguide/monolith.html">there are two choices</a>: 1/ one Lambda per REST resource verbs, or 2/ group in one function handler with routing depending of the HTTP method used. </p>
+<p>With the first implementation choice, the microservice is now a group of lambda functions, API gateway construct, Dynamodb tables (or SQL ones, does not matter for this discussion), and queueing for event propagation. The code integrity is done via the Infrastructure as Code (IaC) definition. This IaC can be done with AWS CloudFormation template, CDK or AWS Serverless Application Model <a href="https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html">SAM</a>.</p>
+<p>The <a href="https://docs.powertools.aws.dev/lambda/python/latest/core/event_handler/api_gateway/">AWS Powertool REST API</a> supports the second pattern with annotation. The first solution means duplicate code, and complex infrastructure as code, while the second is more 'microservice' principle oriented, simpler to unit test and to package. When not using AWS Powertool RestOrchestration, the routing logic is boilerplate code with minimum business logic. </p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+    <span class="n">httpMethod</span> <span class="o">=</span> <span class="n">command</span><span class="p">[</span><span class="s1">&#39;httpMethod&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">httpMethod</span> <span class="o">==</span> <span class="s1">&#39;GET&#39;</span><span class="p">:</span>
+        <span class="n">car_id</span> <span class="o">=</span> <span class="n">command</span><span class="p">[</span><span class="s1">&#39;pathParameters&#39;</span><span class="p">][</span><span class="s1">&#39;car_id&#39;</span><span class="p">]</span>
+        <span class="n">car</span> <span class="o">=</span> <span class="n">getCar</span><span class="p">(</span><span class="n">car_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">car</span>
+    <span class="k">elif</span> <span class="n">httpMethod</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="n">carStr</span><span class="o">=</span><span class="n">command</span><span class="p">[</span><span class="s1">&#39;body&#39;</span><span class="p">]</span>
+        <span class="n">car</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">carStr</span><span class="p">)</span>
+        <span class="n">carOut</span> <span class="o">=</span> <span class="n">createCar</span><span class="p">(</span><span class="n">car</span><span class="p">)</span>
+</code></pre></div>
+<p>While with RestResolver the boilerplate code is abstracted via annotations:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/cars/&lt;car_id&gt;&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">getCarUsingCarId</span><span class="p">(</span><span class="n">car_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+
+<span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">LambdaContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">app</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+</code></pre></div>
+<p>Also this is not because the argument of the function is called 'event' that it has the same semantic of a business event in an EDA. This is a message to process as a request, and with API Gateway frontend it is a HTTP request.</p>
+<p>When adopting and event-driven implementation, we need to assess if we want to use the <a href="https://jbcodeforce.github.io/eda-studies/patterns/#transactional-outbox">Transactional Outbox pattern</a>, by saving the event to a dedicate event table, and use Change Data Capture tool or DynamoDB streaming capability to propagate events to the downstream consumers.</p>
+<h3 id="lambda-constructs">Lambda constructs<a class="headerlink" href="#lambda-constructs" title="Permanent link">&para;</a></h3>
+<p>A  Lambda function has three primary components – trigger, code, and configuration.</p>
+<p><img alt="" src="../images/lambda-fct-0.png" width="800" /></p>
+<p><strong>Figure 3: Lambda constructs</strong></p>
+<ul>
+<li><strong>Triggers</strong> describe when a Lambda function should run. A trigger integrates the Lambda function with other AWS services, enabling to run the Lambda function in response to certain API calls that occur in the AWS account. To support microservice implementation using Lambda, the main trigger should be API Gateway.</li>
+<li>An <strong>execution environment</strong> manages the processes and resources that are required to run the function. </li>
+<li><strong>Configuration</strong> includes compute resources, execution timeout, IAM roles (lambda_basic_execution)...</li>
+</ul>
+<p>Servers do not run continuously, and a function invocation is time boxed to 15 minutes. </p>
+<h3 id="lambda-run-time-architecture">Lambda run time architecture<a class="headerlink" href="#lambda-run-time-architecture" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>The Lambda service is split into the control plane and the data plane. The control plane provides the management APIs (for example, <code>CreateFunction</code>, <code>UpdateFunctionCode</code>). The data plane is where Lambda's API resides to invoke the Lambda functions. It is HA over multi AZs in same region.</p>
+<p><img alt="" src="../diagrams/ctrl_data_planes.drawio.png" width="900" /></p>
+<p><strong>Figure 4: Control and Data Planes</strong></p>
+</li>
+<li>
+<p>Lambda Workers are bare metal Amazon EC2 Nitro instances which are launched and managed by Lambda in a separate isolated AWS account which is not visible to customers. Each worker has one to many <a href="https://aws.amazon.com/blogs/aws/firecracker-lightweight-virtualization-for-serverless-computing/">Firecraker microVMs</a>. There is no container engine. Container image is just for packaging the lambda code as zip does. The following diagram presents the high level components, that are slightly different if the communication with the client is synchronous or asynchronous:</p>
+<p><img alt="" src="../diagrams/lambda-arch.drawio.png" width="1000" /></p>
+<p><strong>Figure 5: Lambda services high level component view</strong></p>
+<p>The <strong>event source mapping</strong> is a Lambda components that reads from an event source and invokes a Lambda function (see details below).</p>
+</li>
+<li>
+<p>The execution environment follows the <a href="https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html">life cycle</a> as defined below (time goes from left to right):</p>
+<p><img alt="" src="../images/lamba-env-lc.png" width="800" /></p>
+<p><strong>Figure 6: Lambda execution environment lifecycle</strong></p>
+</li>
+<li>
+<p>In the <strong>Init phase</strong>, Lambda creates or unfreezes an execution environment with the configured resources, downloads the code for the function with all the needed layers, initializes any extensions, initializes the runtime, and then runs the function’s initialization code. After init, the environment is 'Warm'. The extension and runtime initializations are part of the <code>cold start</code> (&lt;1s).</p>
+</li>
+<li>In the <strong>Invoke phase</strong>, Lambda invokes the function handler. After the function runs to completion, Lambda prepares to handle another function invocation. After the execution completes, the execution environment is "frozen", for reuse by another request. (Warm start)</li>
+<li>During <strong>Shutdown phase:</strong> Lambda shuts down the runtime, alerts the extensions to let them stop cleanly, and then removes the environment.</li>
+</ul>
+<details class="- info">
+<summary>Lambda Extension</summary>
+<p>Lambda supports external and internal <a href="https://docs.aws.amazon.com/lambda/latest/dg/lambda-extensions.html">extensions</a>. An external extension runs as an independent process in the execution environment and continues to run after the function invocation is fully processed. Can be used for logging, monitoring, integration...</p>
+</details>
+<ul>
+<li>A function's concurrency is the number of execution environment instances that serve requests at a given time.</li>
+<li>
+<p>There is at least one runtime which matches the programming language (Java, Node.js, C#, Go, or Python).</p>
+</li>
+<li>
+<p><strong>Synchronous calls</strong> are used for immediate function response, with potential errors returned to the caller. It may return throttles when the number of requests hits the concurrency limit.</p>
+</li>
+</ul>
+<details class="info" open="open">
+<summary>A synchronous flow to Lambda explained</summary>
+<p>Below is a diagram representing an external client application invoking a Lambda function synchronously. The requests reach one of the front end load balancer, which routes the request to a Frontend lambda invoke service. As a multi-AZ service, for high availability, there is no concern of load balancing across AZs. </p>
+<p><img alt="" src="../diagrams/req-resp-lambda.drawio.png" width="900" /></p>
+<p><strong>Figure 7: Synchronous flow to lambda function</strong></p>
+<p>The frontend invoke svc performs authentication and authorization of the request to ensure only authorized apps can access the function. It also calls the <strong>Counting svc</strong>, to assess quota limits based on reserver concurrency, burst, counts... The <strong>Assignment svc</strong>, is used as stateful service, to find a <strong>worker</strong> to assign to the Lambda function (it also defines the CPU, memory needed by the fct). The <strong>control plane svc</strong> manages the fct creation, the life cycle of the assigned service nodes. The Assignment svc is a coordinator, information retriever, and distributor about what state execution environments are on the worker host and where invokes should go. It keeps frontend svc up to date about fct execution. For the first invocation, it also communicates with the <strong>Placement svc</strong> to get new runtime environment to be started on a worker host with a time-based lease. It uses Optimization to maximize packing density for better fleet utilization and minimize cold start latency. Placement svc monitors worker health. Once the environment is up and running, the Assignment svc gets the supplied IAM role for the lambda function security privileges defined and distributed to the worker host, along with the environment variables. Once done the Frontend svc can do the invoke of the lambda fct handler. When the response is sent back to the client, the worker signals back to the Assignment svc the invoke is done, so it can receive new warm invocations.</p>
+</details>
+<ul>
+<li><strong>Asynchronous call</strong> goes to an "event invoke" frontend, that returns an acknowledgement message. Event payloads are always queued for processing before invocation. Asynchronous processing should be more scalable.</li>
+</ul>
+<details class="info" open="open">
+<summary>Asynchronous flow to Lambda details</summary>
+<p>The Load balancers knows it is an asynchronous or event invoke so it routed to an "event invoke" frontend svc. The request message or event is enqueued to SQS queue. There are multiple autoscaling SQS queues, and they are hidden to the lambda developer.</p>
+<p><img alt="" src="../diagrams/async-lambda-flow.drawio.png" /> </p>
+<p><strong>Figure 8: Asynchronous flow to lambda function</strong></p>
+<p>Internal SQS queue persists messages for up to 6 hours. Queued events are retrieved in batches by Lambda’s poller instances, which also delete messages from the queue. The poller fleet is a group of Amazon EC2 instances whose purpose is to process queued event invocations which have not yet been processed. The poller propagates the invoke using the synchronous "frontend invoke svc". Once the invoke to the handler succeed, the poller gets the response and can delete the message from the queue. When the message fails all processing attempts, it will follow the same visibility timeout as in SQS, the message is discarded by Lambda. The dead letter queue (DLQ) feature allows sending unprocessed events from asynchronous invocations to an Amazon SQS queue or an Amazon SNS topic defined by the developer. The <strong>Queue manager svc</strong> manages queues, monitors them for any backups. It interacts with the <strong>Leasing svc</strong> which manages which pollers are processing with which queues. The Leasing svc also manages and monitors pollers.</p>
+</details>
+<p>???+ info <strong>Event source mapping</strong>
+    Event source mapping is used to poll messages from different streaming sources and then synchronously calls the Lambda function. It reads using batching and sends all the events as argument to the function. If the function returns an error for any of the messages in a batch, Lambda retries the whole batch of messages until processing succeeds or the messages expire. It supports error handling. It is based on the same architecture as the asynchronous invoke frontend and poller fleet, except the code of the poller is specific to the event source. </p>
+<div class="codehilite"><pre><span></span><code>![](./diagrams/evt-mapping-lambda-flow.drawio.png){width=800}
+
+**Figure 9: Event source processing to synch lambda**
+
+As a managed service within Lambda the poller fleet is serverless too.
+</code></pre></div>
+
+<ul>
+<li>If the Lambda service is not available. Callers may queue their payload on the client-side for retry.</li>
+</ul>
+<h3 id="event-sourcing">Event sourcing<a class="headerlink" href="#event-sourcing" title="Permanent link">&para;</a></h3>
+<p>Event sourcing is a design pattern often used in EDA adoption. Most business applications are state based persistent where any update changes the previous state of the business entities. The database keeps the last committed update. But some business application needs to <strong>explain how an entity reaches its current state</strong>. For that, the application needs to keep history of business facts.</p>
+<p><strong>Event sourcing</strong> persists the state of a business entity, such an Order, as a sequence of state-changing events or immutable "facts", ordered over time. Event sourcing has its roots in the domain-driven design community.</p>
+<p>When the state of a system changes, an application issues a notification event of the state change. </p>
+<p><img alt="" src="../diagrams/event-sourcing.drawio.png" width="600" /></p>
+<p><strong>Figure 10: event sourcing over time</strong></p>
+<p>Any interested parties can become consumers of the event and take required actions.  The state-change event is immutable stored in an event log or event store in time order.  The event log becomes the principal source of truth. The system state can be recreated from a point in time by reprocessing the events. The history of state changes becomes an audit record for the business and is often a useful source of data for business analysts to gain insights into the business.</p>
+<p>Therefore Lambda function, when it manages a business entity, can generate events to a event backbone, or persists the event in a time based data store like <a href="https://docs.aws.amazon.com/timestream/latest/developerguide/what-is-timestream.html">Amazon Timestream</a>, which supports trillions of data points per day, keeping recent data in memory and moving historical data to a cost optimized storage tier based upon user defined policies. It includes a query engine with time based analytic functions.</p>
+<p><img alt="" src="../diagrams/timestream-event-srcing.drawio.png" width="600" /></p>
+<p><strong>Figure 11: Outbox pattern with Amazon Timestream</strong></p>
+<p>Timestream is serverless and automatically scales up or down to adjust capacity and performance. The architecture uses different layers to increase decoupling, and a cellular architecture using smaller copies of the time tables, with specific networking end-points.</p>
+<p>An alternate to Lambda directly writing to TimeStream, the Lambda can write in an event outbox table, and the Change Data Capture or a Streaming feature can push the event to a queue then to TimeStream.</p>
+<p><img alt="" src="../diagrams/dynamodb-stream.drawio.png" /></p>
+<p><strong>Figure 12: Outbox pattern with Dynamodb and DynamoDB streams</strong></p>
+<p>Some implementation leverages Kafka to support event sourcing. The major question will be how long in the past the application needs to come back to. Kafka has a retention period, that can be tuned at the topic level, so if the retention is not covering the expected playback period, then event sourcing will miss events.</p>
+<h2 id="fit-for-purpose">Fit for purpose<a class="headerlink" href="#fit-for-purpose" title="Permanent link">&para;</a></h2>
+<p>Before starting big implementation it is important to verify which technology to select. A lot of projects fail by selecting the wrong software to support the business application ("With an hammer everything is a nail" paradigm). For Lambda there are technology and application design constraints that need to be reviewed:</p>
+<h3 id="technical-constraints">Technical constraints<a class="headerlink" href="#technical-constraints" title="Permanent link">&para;</a></h3>
+<p>There are a set of physical constraints the Lambda application needs to support:</p>
+<ul>
+<li>Must run under 15 min.</li>
+<li>Memory from 128MB to 10GB.</li>
+<li>Maximum 1000 concurrent calls.</li>
+<li>Code in compressed zip should be under 50MB and 250MB uncompressed.</li>
+<li>Latency on the first call.</li>
+<li>Disk capacity for /tmp is limited to 10GB.</li>
+</ul>
+<h3 id="design-constraints">Design constraints<a class="headerlink" href="#design-constraints" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Event-driven architectures use events to communicate between services and invoke decoupled services. </li>
+<li>When migrating existing application <a href="./#designing-for-lambda">review the different design patterns to consider</a>.</li>
+<li>Think about co-existence with existing application and how API Gateway can be integrated to direct traffic to new components (Lambda functions) without disrupting existing systems. With API Gateway, developer may export the SDK for the business APIs to make integration easier, and can use throttling and usage plans to control how different clients can use the API.</li>
+<li>Do cost comparison analysis. For example API Gateway is pay by the requests, while ALB is priced by hours based on the load balance capacity units used per hour. Lambda is also pay per request based.</li>
+<li>Assess when to use ECS Fargate when the application is in container, and may run for a long time period. Larger packaging may not be possible to run on Lambda, while may run easily on ECS. Applications that use non HTTP end point, integrate to messaging middleware with Java based APIs (Kafka, AMQP,...) are better fit for ECS Fargate deployment.</li>
+</ul>
+<h3 id="designing-for-lambda">Designing for Lambda<a class="headerlink" href="#designing-for-lambda" title="Permanent link">&para;</a></h3>
+<p>A lot of design principles are <a href="https://docs.aws.amazon.com/lambda/latest/operatorguide/design-principles.html">well documented in the Lambda user guide</a>, below are some complement principles to consider.</p>
+<h4 id="migrating-existing-workloads">Migrating existing workloads<a class="headerlink" href="#migrating-existing-workloads" title="Permanent link">&para;</a></h4>
+<p>Some of the common design patterns to consider when migrating to serverless:</p>
+<ul>
+<li><strong>Leapfrog</strong>: bypass interim steps and go straight from an on-premises legacy architecture to a serverless cloud architecture.</li>
+<li><strong>Organic</strong>: lift and shift. Experiment with Lambda in low-risk internal scenarios such as log processing or cron jobs.</li>
+<li><strong>Strangler</strong>: incrementally and systematically decomposes monolithic applications by creating APIs and building event-driven components that gradually replace components of the legacy application. New feature branches can be serverless first, and legacy components can be decommissioned as they are replaced.</li>
+</ul>
+<h5 id="good-questions-to-assess">Good questions to assess<a class="headerlink" href="#good-questions-to-assess" title="Permanent link">&para;</a></h5>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>What does the application do and how are its components organized?</td>
+<td>Establish a bounded context for each microservice. Assess entity and data store.</td>
+</tr>
+<tr>
+<td>How can you break your data needs based on the <a href="https://jbcodeforce.github.io/eda-studies/patterns/cqrs/">command query responsibility segregation (CQRS)</a> pattern?</td>
+<td>Strangle data by needs. Decouple write transaction from queries at scale.</td>
+</tr>
+<tr>
+<td>How does the application scale and what components drive the capacity you need?</td>
+<td>Look at independent scaling, and high scaling demand.</td>
+</tr>
+<tr>
+<td>Do you have schedule-based tasks?</td>
+<td>cron jobs are good targets to replace with Lambda functions</td>
+</tr>
+<tr>
+<td>Do you have workers listening to a queue?</td>
+<td>Decoupling may already being adopted, EDA discussions may be started.</td>
+</tr>
+<tr>
+<td>Where can you refactor or enhance functionality without impacting the current implementation?</td>
+<td>Look at API needs, ALB needs.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="starting-new-application">Starting new application<a class="headerlink" href="#starting-new-application" title="Permanent link">&para;</a></h4>
+<p>When starting development for a new application, the following principles may be reviewed to assess for their pertinence:</p>
+<ul>
+<li>Design each Lambda function to handle a single, focused task without dependencies on other functions. This keeps functions independent and decoupled.</li>
+<li>Apply the DDD and bounded context principles to identify service granularity.</li>
+<li>Assess the need for synchronous call between function, and when orchestration flow needs to be externalized. Developer may reduce coupling by adopting asynchronous invocation between functions but it adds complexity and cost.</li>
+<li>Verify is the performance needs are on the read and query part, and adopt <a href="https://jbcodeforce.github.io/eda-studies/patterns/cqrs/">CQRS</a>.</li>
+<li>When adopting asynchronous invocation, think of message duplications and how to support idempotency.</li>
+<li>Implement error handling within each function rather than propagating errors up the call chain. This prevents failures in one function from impacting others.</li>
+</ul>
+<p>See <a href="https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/welcome.html">Serverless app Lens in AWS Well Architected.</a></p>
+<h4 id="lambda-and-event-driven-architecture">Lambda and Event-driven architecture<a class="headerlink" href="#lambda-and-event-driven-architecture" title="Permanent link">&para;</a></h4>
+<p>Event-driven architectures use events to communicate between services and invoke decoupled services.</p>
+<p>The reference architecture for Event-driven architecture is described in <a href="https://jbcodeforce.github.io/eda-studies/eda/#components-of-the-architecture">this article</a> with a focus to the <a href="https://jbcodeforce.github.io/eda-studies/eda/#a-zoom-into-the-event-backbone-capabilities">'event backbone' expected capabilities</a>. To simplify, I will claim, a event backbone includes a messaging middleware with persistence, schema management, supporting point to point queue, pub-sub topics, and streaming capabilities.</p>
+<p>One important consideration is to address what are the event producers, the type of events and what consumers are interested by those events.</p>
+<p>Lambda Function can be producer of business events to an event backbone.</p>
+<p>It can also be a consumer, and Lambda has native support for events produced by message and streaming services like Amazon Simple Queue Service (SQS), Amazon Simple Notification Service (SNS), and Amazon Kinesis. The major question is at once delivery semantic and idempotency support to help consumers processing duplicate.</p>
+<h2 id="integration-with-other-services">Integration with other services<a class="headerlink" href="#integration-with-other-services" title="Permanent link">&para;</a></h2>
+<p>AWS Lambda has a <a href="https://docs.aws.amazon.com/lambda/latest/dg/lambda-services.html">lot of other Amazon service integrations</a>. We will focus here on the most commons:</p>
+<h3 id="apis">APIs<a class="headerlink" href="#apis" title="Permanent link">&para;</a></h3>
+<p><a href="https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway.html">API Gateway</a> can define webSocket, HTTP or REST APIs integrated with Lambda function. HTTP APIs are newer and are built with the API Gateway version 2 API. REST APIs support more options for authentication and authorization.. In most case one HTTP verb and path are mapped to one handler function, but it should not be the best approach: some lambdas are implementing a microservice to manage a business entity and may support the RESTful operations on the entity. The resource is <code>cars</code> and HTTP GET, POST, PUT, DELETE may be mapped to one function. In this case the full HTTP request is passed to lambda. <a href="https://docs.powertools.aws.dev/lambda/python/latest/core/event_handler/api_gateway/#api-gateway-rest-api">AWS Powertools can be used to route</a> to the good function to process the request.</p>
+<div class="highlight"><pre><span></span><code><span class="n">app</span> <span class="o">=</span> <span class="n">APIGatewayRestResolver</span><span class="p">()</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/cars/&lt;car_id&gt;&quot;</span><span class="p">)</span>
+<span class="nd">@tracer</span><span class="o">.</span><span class="n">capture_method</span>
+<span class="k">def</span> <span class="nf">getCarUsingCarId</span><span class="p">(</span><span class="n">car_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">car_repository</span><span class="o">.</span><span class="n">getCarUsingCarId</span><span class="p">(</span><span class="n">car_id</span><span class="o">=</span><span class="n">car_id</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">LambdaContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">app</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+</code></pre></div>
+<p>Amazon API Gateway gets permission to invoke the function from the function's resource-based policy with the principal being the <code>apigateway.amazonaws.com</code>. </p>
+<p><a href="https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway-tutorial.html">See APIGateway getting started tutorial</a> and <a href="https://catalog.us-east-1.prod.workshops.aws/workshops/2c8321cb-812c-45a9-927d-206eea3a500f/en-US">API Gateway workshop.</a></p>
+<h3 id="function-urls">Function URLs<a class="headerlink" href="#function-urls" title="Permanent link">&para;</a></h3>
+<p>Lambda also supports <a href="https://docs.aws.amazon.com/lambda/latest/dg/lambda-urls.html">function URLs</a>, a built-in HTTPS endpoint for invoking functions. No need for API Gateway and ALB.</p>
+<h3 id="eventbridge-as-a-source">EventBridge as a source<a class="headerlink" href="#eventbridge-as-a-source" title="Permanent link">&para;</a></h3>
+<p><a href="https://docs.aws.amazon.com/lambda/latest/dg/services-cloudwatchevents.html">EventBridge are a classical source</a> of events for Lambda processing as itself integrate with a lot of AWS services. The most important design consideration is to review the event structure generated by EventBridge, review which event bus is used: the <code>default</code> for AWS service events, or custom event bus for any custom applications.</p>
+<h3 id="multi-event-sources">Multi event sources<a class="headerlink" href="#multi-event-sources" title="Permanent link">&para;</a></h3>
+<h3 id="queueing-integration">Queueing integration<a class="headerlink" href="#queueing-integration" title="Permanent link">&para;</a></h3>
+<h3 id="streaming-integration">Streaming integration<a class="headerlink" href="#streaming-integration" title="Permanent link">&para;</a></h3>
+<h2 id="service-limits-or-quotas">Service limits or quotas<a class="headerlink" href="#service-limits-or-quotas" title="Permanent link">&para;</a></h2>
+<p>By design Lambda service scale the function invocation to serve the traffic of the application. Other services integrated with Lambda, like API Gateway, SNS, SQS and Step Functions, also scale up to respond to increased load. </p>
+<p>As a multi-tenant service, there are guardrails in place. Service quotas can be raised until a hard limit.</p>
+<p>Quotas may apply at the Region level, or account level, and may also include time-interval restrictions.</p>
+<p>See the <a href="https://docs.aws.amazon.com/lambda/latest/operatorguide/service-quotas.html">designing with service quotas</a> section of the product user guide.</p>
+<p>Pay attention to concurrent requests quotas per service, and payload size constraint. With big payload think about the claim-check pattern where big files are saved to external storage like S3 bucket.</p>
+<p>As some quotas are set a the account level. First separate dev and production accounts. Leverage <a href="https://aws.amazon.com/organizations/">AWS Organizations</a> to manage all those accounts with the IAM security policies... Use developer account to be able to test lambda with some production data, without impacting the quota limits...
+Add more accounts over time to address specific deployment, growth per region.</p>
+<p>See <a href="../scaling/">the scaling section...</a></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href=".." class="md-footer__link md-footer__link--prev" aria-label="Previous: Introduction">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Introduction
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../scaling/" class="md-footer__link md-footer__link--next" aria-label="Next: Scaling">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Scaling
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["content.code.annotate", "content.tooltips", "navigation.instant", "navigation.tracking", "navigation.footer", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.1e8ae164.min.js"></script>
+      
+    
+  </body>
+</html>
